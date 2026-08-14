@@ -177,8 +177,11 @@
       document.addEventListener("DOMContentLoaded", function() {
         const observerOptions = {
           root: null,
-          rootMargin: '0px 0px -50px 0px', 
-          threshold: 0.15
+          // Trigger as soon as any part clears the fold. A percentage threshold
+          // can never be met by a section taller than the viewport, which left
+          // long sections (the product story) stuck invisible.
+          rootMargin: '0px 0px -80px 0px',
+          threshold: 0
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
@@ -196,11 +199,45 @@
           '.griza-recipes__card'
         ];
 
-        const elementsToAnimate = document.querySelectorAll(targetSelectors.join(', '));
+        // Sections whose content lives in a fixed overlay (cart drawer, modals,
+        // popovers) have no box that can ever scroll into view, so the observer
+        // would never fire and they'd stay stuck at opacity 0. Skip them.
+        const isOverlayHost = (el) =>
+          el.querySelector('dialog, theme-drawer, cart-drawer-component, [popover]') !== null;
+
+        const elementsToAnimate = Array.from(
+          document.querySelectorAll(targetSelectors.join(', '))
+        ).filter((el) => !isOverlayHost(el));
+
+        // This runs after first paint, so anything already on screen has been
+        // drawn. Hiding it now produces a visible flash-then-fade-out. Reveal
+        // whatever is in (or near) the viewport immediately and never animate
+        // it; only observe what is genuinely below the fold.
+        const viewportH = window.innerHeight || document.documentElement.clientHeight;
 
         elementsToAnimate.forEach((el) => {
           el.classList.add('reveal-on-scroll');
+
+          const rect = el.getBoundingClientRect();
+          const alreadyOnScreen = rect.top < viewportH && rect.bottom > 0;
+
+          if (alreadyOnScreen) {
+            el.classList.add('is-visible');
+            return;
+          }
+
           observer.observe(el);
+        });
+
+        // Safety net: anything still hidden after load (zero-size, off-screen,
+        // observer never fired) is revealed rather than left invisible.
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            document.querySelectorAll('.reveal-on-scroll:not(.is-visible)').forEach((el) => {
+              const r = el.getBoundingClientRect();
+              if (r.width === 0 || r.height === 0) el.classList.add('is-visible');
+            });
+          }, 1000);
         });
       });
     </script>

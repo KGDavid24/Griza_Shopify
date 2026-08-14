@@ -41,18 +41,68 @@
   }
 
   .griza-newsletter-{{ section.id }} {
+    position: relative;
     background-color: var(--news-bg);
     padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px;
     box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* Tiled ginger pattern, same texture language as the featured section */
+  .griza-newsletter-{{ section.id }}::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 900 }}');
+      background-repeat: repeat;
+      background-size: {{ s.pattern_size_m }}px;
+      opacity: {{ s.pattern_opac | divided_by: 100.0 }};
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
   }
 
   /* --- MOBILE DEFAULT LAYOUT (Flex Column) --- */
   .griza-newsletter__container {
+    position: relative;
+    z-index: 1;
     max-width: {{ s.content_w }}px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 25px;
+  }
+
+  .griza-newsletter__eyebrow {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: {{ s.accent_color }};
+    margin: 0 0 14px;
+  }
+
+  .griza-newsletter__subtitle {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: {{ s.subtitle_fs_m }}px;
+    line-height: 1.45;
+    color: {{ s.title_color }};
+    opacity: 0.85;
+    margin: 18px 0 0;
+    max-width: 46ch;
+  }
+
+  .griza-newsletter__smallprint {
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: {{ s.title_color }};
+    opacity: 0.6;
+    margin: 14px 0 0;
+    max-width: 52ch;
   }
 
   .griza-newsletter__title-wrapper {
@@ -102,23 +152,28 @@
   .griza-newsletter__input {
     flex-grow: 1;
     width: 100%;
-    padding: 16px 20px;
+    min-width: 0;
+    padding: 19px 22px;
     font-family: 'Barlow', sans-serif;
+    font-weight: 600;
     font-size: {{ s.input_fs_m }}px;
     color: {{ s.input_text_color }};
-    background-color: transparent;
-    border: 1px solid {{ s.input_border_color }};
+    background-color: {{ s.input_bg_color }};
+    border: 3px solid {{ s.input_border_color }};
     outline: none;
     box-sizing: border-box;
   }
 
   .griza-newsletter__input::placeholder {
     color: {{ s.input_text_color }};
-    opacity: 0.7;
+    opacity: 0.55;
+    font-weight: 400;
   }
 
-  .griza-newsletter__input:focus {
-    border-width: 2px;
+  /* Outline instead of a border-width change so focus never shifts layout */
+  .griza-newsletter__input:focus-visible {
+    outline: 3px solid {{ s.title_color }};
+    outline-offset: 3px;
   }
 
   /* CSS Masked Button */
@@ -160,20 +215,81 @@
   }
 
   .griza-newsletter__success {
-    font-family: 'Barlow', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: {{ s.btn_color }};
+    font-family: var(--news-heading-font) !important;
+    font-size: 26px;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: {{ s.btn_text_color }};
+    background: {{ s.btn_color }};
     margin: 0;
-    padding: 15px;
-    border: 2px dashed {{ s.btn_color }};
-    text-align: center;
+    padding: 22px 26px;
+    text-align: left;
+    box-shadow: 8px 8px 0 0 {{ s.title_color }};
   }
+
+  /* --- GDPR consent --- */
+  .griza-newsletter__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin-top: 16px;
+    /* full form width - runs under the button too, not capped to the input */
+    max-width: 100%;
+  }
+
+  .griza-newsletter__consent input {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0;
+    accent-color: {{ s.btn_color }};
+    cursor: pointer;
+  }
+
+  .griza-newsletter__consent input:focus-visible {
+    outline: 3px solid {{ s.title_color }};
+    outline-offset: 2px;
+  }
+
+  .griza-newsletter__consent label {
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: {{ s.title_color }};
+    opacity: 0.82;
+    cursor: pointer;
+  }
+
+  .griza-newsletter__consent a {
+    color: {{ s.btn_color }};
+    text-underline-offset: 3px;
+  }
+
+  .griza-newsletter__errors {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: {{ s.title_color }};
+    background: {{ s.input_bg_color }};
+    border-left: 4px solid {{ s.btn_color }};
+    padding: 12px 16px;
+    margin-top: 14px;
+  }
+
+  .griza-newsletter__errors ul { margin: 0; padding-left: 18px; }
 
   /* --- DESKTOP VIEW (CSS GRID) --- */
   @media screen and (min-width: 750px) {
     .griza-newsletter-{{ section.id }} {
       padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px;
+    }
+
+    .griza-newsletter-{{ section.id }}::before {
+      background-size: {{ s.pattern_size }}px;
+    }
+
+    .griza-newsletter__subtitle {
+      font-size: {{ s.subtitle_fs_d }}px;
     }
 
     .griza-newsletter__container {
@@ -226,8 +342,10 @@
     }
 
     .griza-newsletter__submit {
-      flex: 0 0 auto; /* Pontosan akkora lesz, mint a benne lévő szöveg */
+      flex: 0 0 auto;
       width: max-content;
+      /* Keeps the button substantial regardless of how short the label is */
+      min-width: {{ s.btn_min_w }}px;
     }
 
     .griza-newsletter__submit span {
@@ -241,8 +359,16 @@
     
     <!-- 1. Cím Blokkj -->
     <div class="griza-newsletter__title-wrapper">
+      {%- if s.eyebrow_txt != blank -%}
+        <p class="griza-newsletter__eyebrow">{{ s.eyebrow_txt | escape }}</p>
+      {%- endif -%}
+
       {%- if s.title != blank -%}
         <h2 class="griza-newsletter__title">{{ s.title | newline_to_br }}</h2>
+      {%- endif -%}
+
+      {%- if s.subtitle_txt != blank -%}
+        <p class="griza-newsletter__subtitle">{{ s.subtitle_txt | escape | newline_to_br }}</p>
       {%- endif -%}
     </div>
 
@@ -280,10 +406,33 @@
               <span>{{ s.btn_text }}</span>
             </button>
           </div>
+          {%- if s.consent_txt != blank -%}
+            {%- assign consent_id = 'griza-consent-' | append: section.id -%}
+            <div class="griza-newsletter__consent">
+              <input
+                type="checkbox"
+                id="{{ consent_id }}"
+                name="contact[accepts_marketing]"
+                value="true"
+                required
+              >
+              <label for="{{ consent_id }}">
+                {{- s.consent_txt | escape }}
+                {%- if s.consent_link != blank and s.consent_link_lbl != blank %}
+                  <a href="{{ s.consent_link }}">{{ s.consent_link_lbl | escape }}</a>
+                {%- endif -%}
+              </label>
+            </div>
+          {%- endif -%}
+
           {%- if form.errors -%}
-            <div style="color: red; margin-top: 10px; font-family: 'Barlow', sans-serif;">
+            <div class="griza-newsletter__errors">
               {{ form.errors | default_errors }}
             </div>
+          {%- endif -%}
+
+          {%- if s.smallprint_txt != blank -%}
+            <p class="griza-newsletter__smallprint">{{ s.smallprint_txt | escape }}</p>
           {%- endif -%}
         {%- endif -%}
       {% endform %}
@@ -305,11 +454,30 @@
     { "type": "color", "id": "bg_color", "label": "Section Background", "default": "#FEFADF" },
     { "type": "color", "id": "title_color", "label": "Headline Color", "default": "#1D1939" },
 
+    { "type": "color", "id": "accent_color", "label": "Accent (eyebrow)", "default": "#E86E25" },
+
     { "type": "header", "content": "Text Content" },
+    { "type": "text", "id": "eyebrow_txt", "label": "Eyebrow", "default": "NEWSLETTER" },
     { "type": "textarea", "id": "title", "label": "Headline", "default": "AJUTĂ-NE SĂ\nRUPEM LANȚUL\nCARE TE ȚINE\nÎN BANAL" },
+    { "type": "textarea", "id": "subtitle_txt", "label": "Subtitle", "default": "Rețete, idei de băuturi și noutăți despre ghimbir. Fără spam, doar lucruri cu gust." },
+    { "type": "range", "id": "subtitle_fs_d", "min": 12, "max": 30, "step": 1, "unit": "px", "label": "Subtitle Size (Desktop)", "default": 18 },
+    { "type": "range", "id": "subtitle_fs_m", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Subtitle Size (Mobile)", "default": 16 },
+    { "type": "text", "id": "smallprint_txt", "label": "Small Print", "default": "Te poți dezabona oricând." },
+
+    { "type": "header", "content": "Consent Checkbox" },
+    { "type": "text", "id": "consent_txt", "label": "Consent Text", "info": "Leave blank to hide the checkbox. The checkbox is required when shown.", "default": "Sunt de acord ca datele mele să fie folosite pentru a primi noutăți prin e-mail, conform" },
+    { "type": "text", "id": "consent_link_lbl", "label": "Consent Link Label", "default": "Politicii de confidențialitate." },
+    { "type": "url", "id": "consent_link", "label": "Consent Link" },
+
+    { "type": "header", "content": "Background Pattern" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Tiled Pattern" },
+    { "type": "range", "id": "pattern_size", "min": 100, "max": 800, "step": 10, "unit": "px", "label": "Tile Size (Desktop)", "default": 340 },
+    { "type": "range", "id": "pattern_size_m", "min": 80, "max": 600, "step": 10, "unit": "px", "label": "Tile Size (Mobile)", "default": 220 },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Pattern Opacity", "default": 10 },
 
     { "type": "header", "content": "Form & Input Styling" },
     { "type": "color", "id": "input_text_color", "label": "Input Text & Placeholder Color", "default": "#1D1939" },
+    { "type": "color", "id": "input_bg_color", "label": "Input Background", "default": "#FFFFFF" },
     { "type": "color", "id": "input_border_color", "label": "Input Border Color", "default": "#E86E25" },
     { "type": "range", "id": "input_fs_d", "min": 14, "max": 30, "step": 1, "unit": "px", "label": "Input Text Size (Desktop)", "default": 20 },
     { "type": "range", "id": "input_fs_m", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Input Text Size (Mobile)", "default": 16 },
@@ -320,6 +488,7 @@
     { "type": "color", "id": "btn_text_color", "label": "Button Text Color", "default": "#FFFFFF" },
     { "type": "range", "id": "btn_fs_d", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Button Text Size (Desktop)", "default": 28 },
     { "type": "range", "id": "btn_fs_m", "min": 12, "max": 36, "step": 1, "unit": "px", "label": "Button Text Size (Mobile)", "default": 24 },
+    { "type": "range", "id": "btn_min_w", "min": 180, "max": 600, "step": 10, "unit": "px", "label": "Button Min Width (Desktop)", "default": 380 },
     { 
       "type": "image_picker", 
       "id": "btn_image", 

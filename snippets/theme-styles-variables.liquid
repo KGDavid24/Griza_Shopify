@@ -1,4 +1,29 @@
 {% style %}
+  /* Bebas Neue Pro — the licensed display face. Registered globally (rather than
+     per-section) so every heading, button and drawer gets the Romanian
+     comma-below glyphs Ș/Ț that Shopify's Bebas Neue is missing. */
+  @font-face {
+    font-family: 'BebasNeuePro';
+    src: url('{{ 'bebasneuepro-regular.otf' | asset_url }}') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'BebasNeuePro';
+    src: url('{{ 'bebasneuepro-bold.otf' | asset_url }}') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'BebasNeuePro';
+    src: url('{{ 'bebasneuepro-italic.otf' | asset_url }}') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
   {%- liquid
     assign rendered_fonts = ''
 
@@ -159,13 +184,17 @@
     --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
     --font-body--style: {{ settings.type_body_font.style }};
     --font-body--weight: {{ settings.type_body_font.weight }};
-    --font-subheading--family: {{ settings.type_subheading_font.family }}, {{ settings.type_subheading_font.fallback_families }};
+    /* Griza display face. Shopify's Bebas Neue has no Ș (U+0218) or Ț (U+021A),
+       so Romanian headings fell back mid-word to a mismatched font. The licensed
+       Bebas Neue Pro in assets/ contains both, so headings/subheadings/accents
+       use it, with Bebas Neue kept as the fallback. */
+    --font-subheading--family: 'BebasNeuePro', {{ settings.type_subheading_font.family }}, {{ settings.type_subheading_font.fallback_families }};
     --font-subheading--style: {{ settings.type_subheading_font.style }};
     --font-subheading--weight: {{ settings.type_subheading_font.weight }};
-    --font-heading--family: {{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }};
+    --font-heading--family: 'BebasNeuePro', {{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }};
     --font-heading--style: {{ settings.type_heading_font.style }};
     --font-heading--weight: {{ settings.type_heading_font.weight }};
-    --font-accent--family: {{ settings.type_accent_font.family }}, {{ settings.type_accent_font.fallback_families }};
+    --font-accent--family: 'BebasNeuePro', {{ settings.type_accent_font.family }}, {{ settings.type_accent_font.fallback_families }};
     --font-accent--style: {{ settings.type_accent_font.style }};
     --font-accent--weight: {{ settings.type_accent_font.weight }};
 

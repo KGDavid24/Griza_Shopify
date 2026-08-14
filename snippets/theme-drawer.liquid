@@ -24,6 +24,18 @@
   /* Runs synchronously during HTML parsing — opens the correct drawer on first
      paint if navigation state was saved, so it renders with the rest of the page. */
   (function () {
+    /* Drawers are modal overlays on every viewport (see MODAL_BREAKPOINT in
+       theme-drawer.js), so restoring one after navigation is wrong twice over:
+       it covers the page the shopper just asked for (clicking "Continue
+       shopping" would land on the catalog with the cart still over it), and the
+       restore below re-opens via the `open` attribute, which produces a
+       NON-modal dialog — no backdrop, no focus trap, no scroll lock.
+       Flip this to true only if the squeeze layout is ever restored. */
+    var RESTORE_ACROSS_NAVIGATION = false;
+
+    try { sessionStorage.removeItem('theme-drawer-open'); } catch (e) {}
+    if (!RESTORE_ACROSS_NAVIGATION) return;
+
     var drawerIds = (sessionStorage.getItem('theme-drawer-open') || '').split(',').filter(Boolean);
     if (!drawerIds.length) return;
 

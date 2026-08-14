@@ -51,7 +51,7 @@
               "type": "text",
               "name": "t:names.text",
               "settings": {
-                "text": "<h1>Shop by collection</h1>",
+                "text": "<h1>Cumpără după colecție</h1>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",

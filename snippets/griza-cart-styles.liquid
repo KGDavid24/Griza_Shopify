@@ -1,0 +1,191 @@
+{%- comment -%}
+  Griza cart page styling.
+
+  Every rule is scoped to .cart-page. The cart drawer reuses the same class
+  names (cart-items__*, cart-totals, cart__checkout-button), so unscoped rules
+  would restyle the drawer too and undo its own treatment.
+{%- endcomment -%}
+
+{%- assign griza_cart_pattern = 'griza-gingern-pattern.svg' | file_url -%}
+{%- if griza_cart_pattern != blank -%}
+  {% style %}
+    #shopify-section-{{ section.id }} .section-background {
+      background-image:
+        linear-gradient(rgba(254, 250, 222, 0.92), rgba(254, 250, 222, 0.92)),
+        url('{{ griza_cart_pattern }}');
+      background-repeat: repeat, repeat;
+      background-size: auto, 320px;
+    }
+
+    /* The navy summary carries the ginger field like every other navy surface */
+    .cart-page .cart-page__summary {
+      background-image:
+        linear-gradient(rgba(29, 25, 57, 0.92), rgba(29, 25, 57, 0.92)),
+        url('{{ griza_cart_pattern }}');
+      background-repeat: repeat, repeat;
+      background-size: auto, 260px;
+    }
+
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .section-background {
+        background-size: auto, 220px;
+      }
+      .cart-page .cart-page__summary {
+        background-size: auto, 200px;
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
+
+{% stylesheet %}
+  .cart-page {
+    --griza-accent: #ed6d1d;
+    --griza-ink: #1d1939;
+    --griza-cream: #fefadf;
+  }
+
+  /* ---------- Title ---------- */
+  .cart-page .cart-title {
+    font-family: var(--font-heading--family);
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--griza-ink);
+  }
+
+  .cart-page .cart-title__count,
+  .cart-page .cart-title span:last-child:not(:only-child) {
+    background: var(--griza-accent);
+    color: var(--griza-cream);
+    border-radius: 0;
+    padding: 4px 10px 2px;
+    font-family: var(--font-heading--family);
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  /* ---------- Line items ---------- */
+  .cart-page .cart-items--dividers .cart-items__table-row {
+    border-color: rgb(46 37 95 / 0.14);
+  }
+
+  .cart-page .cart-items__details a,
+  .cart-page .cart-items__details .cart-primary-typography {
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--griza-ink);
+  }
+
+  .cart-page .cart-items__media-container,
+  .cart-page .cart-items__media img {
+    border-radius: 0;
+  }
+
+  /* Stepper outline is navy here, not orange. On the product page the stepper
+     sits on navy, so an orange edge separated two surfaces; on this cream page
+     it would just be an orange box drawn on cream for no reason. Orange stays
+     reserved for the things you act on. */
+  .cart-page .quantity-selector {
+    background-color: var(--griza-cream);
+    border: 2px solid rgb(46 37 95 / 0.45);
+    border-radius: 0;
+  }
+
+  .cart-page .quantity-selector:focus-within {
+    border-color: var(--griza-accent);
+  }
+
+  .cart-page .quantity-selector button,
+  .cart-page .quantity-selector input,
+  .cart-page .quantity-selector svg {
+    color: var(--griza-ink);
+  }
+
+  .cart-page .quantity-selector button:hover { color: var(--griza-accent); }
+
+  /* ---------- Summary panel ----------
+     Navy rather than an orange rule around cream-on-cream: the panel needs to
+     BE a different surface for the separation to mean anything. Also hugs its
+     own content instead of stretching to the height of the item list. */
+  .cart-page .cart-page__summary {
+    align-self: start;
+    background: var(--griza-ink);
+    border: 0;
+    padding: 28px 26px 26px;
+  }
+
+  .cart-page .cart-page__summary,
+  .cart-page .cart-page__summary p,
+  .cart-page .cart-page__summary span,
+  .cart-page .cart-page__summary summary {
+    color: var(--griza-cream);
+  }
+
+  .cart-page .cart-totals__original-label,
+  .cart-page .cart-note__label,
+  .cart-page .cart-discount__summary {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--griza-cream);
+    opacity: 0.7;
+  }
+
+  .cart-page .cart-totals__original-value {
+    font-family: var(--font-heading--family);
+    font-size: 34px;
+    line-height: 1;
+    color: var(--griza-accent);
+  }
+
+  /* Fine print and rules read quietly on navy */
+  .cart-page .cart-page__summary .cart-secondary-typography,
+  .cart-page .cart-page__summary small,
+  .cart-page .cart-page__summary .tax-note {
+    color: var(--griza-cream);
+    opacity: 0.6;
+  }
+
+  .cart-page .cart-actions__divider,
+  .cart-page .cart-page__summary hr {
+    background: rgb(254 250 223 / 0.18);
+    border-color: rgb(254 250 223 / 0.18);
+  }
+
+  .cart-page .cart-page__summary svg { color: var(--griza-cream); }
+
+  /* ---------- Checkout ---------- */
+  .cart-page .cart__checkout-button {
+    font-family: var(--font-heading--family);
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    min-height: 58px;
+    border-radius: 0;
+    clip-path: polygon(0% 0%, 94% 0%, 97% 10%, 94% 20%, 100% 32%, 95% 48%, 100% 62%, 94% 78%, 98% 90%, 93% 100%, 0% 100%);
+    transition: transform .18s ease, filter .18s ease;
+  }
+
+  .cart-page .cart__checkout-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+  }
+
+  @media screen and (max-width: 749px) {
+    .cart-page .cart-title { font-size: 34px; }
+    .cart-page .cart-items__details a,
+    .cart-page .cart-items__details .cart-primary-typography { font-size: 19px; }
+    .cart-page .cart-totals__original-value { font-size: 28px; }
+    .cart-page .cart-page__summary { padding: 20px 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cart-page .cart__checkout-button { transition: none; }
+  }
+{% endstylesheet %}

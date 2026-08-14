@@ -2,8 +2,12 @@ import { Component } from '@theme/component';
 import { trapFocus, removeTrapFocus } from '@theme/focus';
 import { isClickedOutside, lockScroll, onAnimationEnd, unlockScroll } from '@theme/utilities';
 
-/** Viewport width below which the drawer opens as a modal overlay (no squeeze). */
-const MODAL_BREAKPOINT = 990;
+/** Viewport width below which the drawer opens as a modal overlay (no squeeze).
+ *  Set beyond any real viewport so the drawer is ALWAYS a modal overlay:
+ *  Horizon's default (990) made desktop squeeze the page sideways instead of
+ *  covering it. Modal mode gives a native ::backdrop, focus trap and scroll
+ *  lock on every viewport. */
+const MODAL_BREAKPOINT = 100000;
 
 /**
  * A drawer that opens from the right side.

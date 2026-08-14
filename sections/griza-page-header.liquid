@@ -1,0 +1,235 @@
+{%- comment -%}
+  Section: Griza Page Header
+  Reusable branded header (eyebrow / title / subtitle) with a tiled pattern.
+  Title falls back to the collection or page title when left blank.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign auto_title = collection.title | default: page.title | default: shop.name
+  assign heading = s.title_txt | default: auto_title
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if s.custom_font_filename != blank %}
+    {%- assign font_ext = s.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ s.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+
+    --gph-display: {% if s.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+    --gph-bg: {{ s.bg_color }};
+    --gph-txt: {{ s.txt_color }};
+    --gph-accent: {{ s.accent_color }};
+  }
+
+  .gph-{{ section.id }} {
+    position: relative;
+    background-color: var(--gph-bg);
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px;
+    box-sizing: border-box;
+    overflow: hidden;
+    {% if s.edge_h > 0 %}
+      border-bottom: {{ s.edge_h }}px solid {{ s.edge_color }};
+    {% endif %}
+  }
+
+  .gph-{{ section.id }}__pattern {
+    position: absolute;
+    inset: 0;
+    {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 900 }}');
+      background-repeat: repeat;
+      background-size: {{ s.pattern_size_m }}px;
+      opacity: {{ s.pattern_opac | divided_by: 100.0 }};
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .gph-{{ section.id }}__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+    text-align: {{ s.alignment }};
+  }
+
+  .gph-{{ section.id }}__eyebrow {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gph-accent);
+    margin: 0 0 12px;
+  }
+
+  .gph-{{ section.id }}__title {
+    font-family: var(--gph-display);
+    font-size: {{ s.title_fs_m }}px;
+    line-height: {{ s.title_lh }};
+    text-transform: uppercase;
+    color: var(--gph-txt);
+    margin: 0;
+  }
+
+  .gph-{{ section.id }}__sub {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: {{ s.sub_fs_m }}px;
+    line-height: 1.5;
+    color: var(--gph-txt);
+    opacity: 0.85;
+    margin: 16px 0 0;
+    max-width: 56ch;
+    {% if s.alignment == 'center' %}margin-inline: auto;{% endif %}
+  }
+
+  .gph-{{ section.id }}__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 28px;
+    min-width: {{ s.btn_min_w }}px;
+    min-height: 56px;
+    border: 0;
+    cursor: pointer;
+    background: var(--gph-accent);
+    color: var(--gph-txt);
+    font-family: var(--gph-display);
+    font-size: {{ s.btn_fs_m }}px;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 16px 34px 12px;
+    clip-path: polygon(0% 0%, 94% 0%, 97% 10%, 94% 20%, 100% 32%, 95% 48%, 100% 62%, 94% 78%, 98% 90%, 93% 100%, 0% 100%);
+    transition: transform .18s ease, filter .18s ease;
+  }
+
+  .gph-{{ section.id }}__cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gph-{{ section.id }}__cta { transition: none; }
+  }
+
+  @media screen and (min-width: 750px) {
+    .gph-{{ section.id }} {
+      padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px;
+    }
+
+    .gph-{{ section.id }}__cta { font-size: {{ s.btn_fs_d }}px; }
+    .gph-{{ section.id }}__pattern { background-size: {{ s.pattern_size }}px; }
+    .gph-{{ section.id }}__title { font-size: {{ s.title_fs_d }}px; }
+    .gph-{{ section.id }}__sub   { font-size: {{ s.sub_fs_d }}px; }
+  }
+{%- endstyle -%}
+
+<section class="gph-{{ section.id }}">
+  <div class="gph-{{ section.id }}__pattern" aria-hidden="true"></div>
+
+  <div class="gph-{{ section.id }}__inner">
+    {%- if s.eyebrow_txt != blank -%}
+      <p class="gph-{{ section.id }}__eyebrow">{{ s.eyebrow_txt | escape }}</p>
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <h1 class="gph-{{ section.id }}__title">{{ heading | escape }}</h1>
+    {%- endif -%}
+
+    {%- if s.sub_txt != blank -%}
+      <p class="gph-{{ section.id }}__sub">{{ s.sub_txt | escape }}</p>
+    {%- endif -%}
+
+    {%- if s.btn_lbl != blank -%}
+      <a class="gph-{{ section.id }}__cta" href="{{ s.btn_lnk | default: '/' }}">{{ s.btn_lbl | escape }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Page Header",
+  "tag": "section",
+  "class": "section-griza-page-header",
+  "settings": [
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "default": "bebasneuepro-bold.otf" },
+
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow_txt", "label": "Eyebrow", "default": "CATALOG" },
+    { "type": "text", "id": "title_txt", "label": "Title", "info": "Leave blank to use the collection or page title." },
+    { "type": "textarea", "id": "sub_txt", "label": "Subtitle" },
+    {
+      "type": "select", "id": "alignment", "label": "Alignment", "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ]
+    },
+
+    { "type": "header", "content": "Call to Action" },
+    { "type": "text", "id": "btn_lbl", "label": "Button Label", "info": "Leave blank to hide the button." },
+    { "type": "url", "id": "btn_lnk", "label": "Button Link" },
+    { "type": "range", "id": "btn_min_w", "min": 160, "max": 600, "step": 10, "unit": "px", "label": "Button Min Width", "default": 280 },
+    { "type": "range", "id": "btn_fs_d", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Button Size (Desktop)", "default": 26 },
+    { "type": "range", "id": "btn_fs_m", "min": 12, "max": 34, "step": 1, "unit": "px", "label": "Button Size (Mobile)", "default": 22 },
+
+    { "type": "header", "content": "Background Pattern" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Tiled Pattern" },
+    { "type": "range", "id": "pattern_size", "min": 100, "max": 800, "step": 10, "unit": "px", "label": "Tile Size (Desktop)", "default": 340 },
+    { "type": "range", "id": "pattern_size_m", "min": 80, "max": 600, "step": 10, "unit": "px", "label": "Tile Size (Mobile)", "default": 220 },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Pattern Opacity", "default": 10 },
+
+    { "type": "header", "content": "Bottom Edge" },
+    { "type": "range", "id": "edge_h", "min": 0, "max": 20, "step": 1, "unit": "px", "label": "Bottom Rule Thickness", "default": 0 },
+    { "type": "color", "id": "edge_color", "label": "Bottom Rule Color", "default": "#ED6D1D" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "content_w", "min": 800, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1400 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Top (Desktop)", "default": 64 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 56 },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Top (Mobile)", "default": 40 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 32 },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_fs_d", "min": 30, "max": 200, "step": 2, "unit": "px", "label": "Title Size (Desktop)", "default": 96 },
+    { "type": "range", "id": "title_fs_m", "min": 24, "max": 100, "step": 2, "unit": "px", "label": "Title Size (Mobile)", "default": 52 },
+    { "type": "range", "id": "title_lh", "min": 0.6, "max": 1.4, "step": 0.1, "label": "Title Line Height", "default": 0.9 },
+    { "type": "range", "id": "sub_fs_d", "min": 12, "max": 30, "step": 1, "unit": "px", "label": "Subtitle Size (Desktop)", "default": 18 },
+    { "type": "range", "id": "sub_fs_m", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Subtitle Size (Mobile)", "default": 16 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#1D1939" },
+    { "type": "color", "id": "txt_color", "label": "Text", "default": "#FEFADF" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#ED6D1D" }
+  ],
+  "presets": [
+    { "name": "Griza Page Header" }
+  ]
+}
+{% endschema %}

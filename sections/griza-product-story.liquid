@@ -1,0 +1,417 @@
+{%- comment -%}
+  Section: Griza Product Story
+  Renders the product description (authored in admin as .sm-* markup) and
+  restyles it to brand. Rules are scoped by #shopify-section-{{ section.id }}
+  so they outrank the plain .sm-* selectors in the description's own <style>.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign body = product.description
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+
+    --ps-bg: {{ s.bg_color }};
+    --ps-txt: {{ s.txt_color }};
+    --ps-accent: {{ s.accent_color }};
+    --ps-ink: {{ s.ink_color }};
+    --ps-card: {{ s.card_color }};
+  }
+
+  .ps-{{ section.id }} {
+    position: relative;
+    background-color: var(--ps-bg);
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .ps-{{ section.id }}__pattern {
+    position: absolute;
+    inset: 0;
+    {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 900 }}');
+      background-repeat: repeat;
+      background-size: {{ s.pattern_size }}px;
+      opacity: {{ s.pattern_opac | divided_by: 100.0 }};
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .ps-{{ section.id }}__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+  }
+
+  /* ============ SCOPED OVERRIDES OF THE ADMIN-AUTHORED DESCRIPTION ============ */
+  #shopify-section-{{ section.id }} .sm-desc {
+    font-family: 'Barlow', sans-serif;
+    color: var(--ps-txt);
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Section headings */
+  #shopify-section-{{ section.id }} .sm-desc .sm-section-title {
+    display: block;
+    font-family: var(--font-heading--family);
+    font-size: {{ s.title_fs_m }}px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ps-accent);
+    margin: 44px 0 20px;
+  }
+
+  /* Lead paragraph */
+  #shopify-section-{{ section.id }} .sm-desc .sm-hook {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: {{ s.hook_fs_m }}px;
+    line-height: 1.4;
+    color: var(--ps-txt);
+    margin: 0 0 22px;
+    font-style: normal;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-body {
+    font-size: {{ s.body_fs }}px;
+    line-height: 1.75;
+    opacity: 0.92;
+    margin: 0 0 16px;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc hr {
+    border: 0;
+    border-top: 2px solid var(--ps-accent);
+    opacity: 0.35;
+    margin: 40px 0 0;
+  }
+
+  /* ---- Stats: same language as the homepage stats strip ---- */
+  #shopify-section-{{ section.id }} .sm-desc .sm-numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 0 0 8px;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-number-item {
+    background: var(--ps-ink);
+    border: 0;
+    border-radius: 0;
+    padding: 20px 18px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    line-height: 1.35;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ps-card);
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-number-item strong {
+    display: block;
+    font-family: var(--font-heading--family);
+    font-weight: 400;
+    font-size: {{ s.stat_fs_m }}px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--ps-accent);
+    margin-bottom: 6px;
+  }
+
+  /* ---- Feature list ---- */
+  #shopify-section-{{ section.id }} .sm-desc .sm-unic-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-unic-list li {
+    position: relative;
+    padding: 0 0 0 28px;
+    margin: 0 0 12px;
+    font-size: {{ s.body_fs }}px;
+    line-height: 1.6;
+    opacity: 0.92;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-unic-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 14px;
+    height: 3px;
+    background: var(--ps-accent);
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-unic-list li strong { color: var(--ps-txt); }
+
+  /* ---- Usage cards ---- */
+  #shopify-section-{{ section.id }} .sm-desc .sm-folosire-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-folosire-item {
+    background: var(--ps-card);
+    border: 0;
+    border-left: 4px solid var(--ps-accent);
+    border-radius: 0;
+    padding: 18px 20px;
+    font-size: {{ s.body_fs }}px;
+    line-height: 1.6;
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-folosire-item strong {
+    display: block;
+    font-family: var(--font-heading--family);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--ps-txt);
+    margin-bottom: 6px;
+  }
+
+  /* ---- Pull quote ---- */
+  #shopify-section-{{ section.id }} .sm-desc .sm-cine {
+    border-left: 6px solid var(--ps-accent);
+    background: transparent;
+    padding: 6px 0 6px 22px;
+    margin: 28px 0;
+    font-size: {{ s.quote_fs_m }}px;
+    font-weight: 600;
+    font-style: normal;
+    line-height: 1.5;
+    color: var(--ps-txt);
+    opacity: 1;
+  }
+
+  /* ---- Nutrition table ---- */
+  #shopify-section-{{ section.id }} .sm-desc .sm-nutritie-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin: 0 0 10px;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-nutritie-table th {
+    background: var(--ps-ink);
+    color: var(--ps-card);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 12px 14px;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-nutritie-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-nutritie-table tr:nth-child(even) td {
+    background: var(--ps-card);
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-nutritie-table td:last-child {
+    text-align: right;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-nutritie-note {
+    font-size: 13px;
+    opacity: 0.65;
+    margin: 0;
+  }
+
+  /* ---- Product detail pairs ---- */
+  #shopify-section-{{ section.id }} .sm-desc .sm-pastrare-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-pastrare-item {
+    border: 0;
+    border-top: 2px solid var(--ps-accent);
+    padding: 12px 0 0;
+    background: transparent;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-pastrare-label {
+    display: block;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ps-accent);
+    opacity: 1;
+    margin-bottom: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-pastrare-val {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ps-txt);
+    opacity: 1;
+  }
+
+  /* ---- FAQ ---- */
+  #shopify-section-{{ section.id }} .sm-desc details {
+    border-bottom: 2px solid rgb(0 0 0 / 0.08);
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+    list-style: none;
+    padding: 18px 0;
+    font-family: var(--font-heading--family);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--ps-txt);
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc summary::after {
+    content: '+';
+    font-family: 'Barlow', sans-serif;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--ps-accent);
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .sm-desc details[open] summary::after { content: '−'; }
+  #shopify-section-{{ section.id }} .sm-desc summary:hover { opacity: 0.7; }
+
+  #shopify-section-{{ section.id }} .sm-desc .sm-faq-a {
+    font-size: {{ s.body_fs }}px;
+    line-height: 1.7;
+    opacity: 0.85;
+    padding: 0 0 20px;
+    max-width: 62ch;
+  }
+
+  /* ---- Closing statement ---- */
+  #shopify-section-{{ section.id }} .sm-desc .sm-cta {
+    margin: 40px 0 0;
+    padding: 26px 28px;
+    background: var(--ps-ink);
+    color: var(--ps-card);
+    font-family: var(--font-heading--family);
+    font-weight: 400;
+    font-size: {{ s.cta_fs_m }}px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    opacity: 1;
+  }
+
+  /* ---------------- DESKTOP ---------------- */
+  @media screen and (min-width: 750px) {
+    .ps-{{ section.id }} { padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px; }
+
+    #shopify-section-{{ section.id }} .sm-desc .sm-section-title { font-size: {{ s.title_fs_d }}px; margin-top: 56px; }
+    #shopify-section-{{ section.id }} .sm-desc .sm-hook { font-size: {{ s.hook_fs_d }}px; }
+    #shopify-section-{{ section.id }} .sm-desc .sm-cine { font-size: {{ s.quote_fs_d }}px; padding-left: 28px; }
+    #shopify-section-{{ section.id }} .sm-desc .sm-cta { font-size: {{ s.cta_fs_d }}px; padding: 32px 36px; }
+
+    #shopify-section-{{ section.id }} .sm-desc .sm-numbers-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    #shopify-section-{{ section.id }} .sm-desc .sm-number-item strong { font-size: {{ s.stat_fs_d }}px; }
+    #shopify-section-{{ section.id }} .sm-desc .sm-folosire-grid { grid-template-columns: repeat({{ s.usage_cols }}, 1fr); gap: 18px; }
+    #shopify-section-{{ section.id }} .sm-desc .sm-pastrare-grid { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    #shopify-section-{{ section.id }} .sm-desc summary { font-size: 24px; }
+  }
+{%- endstyle -%}
+
+<section class="ps-{{ section.id }}">
+  <div class="ps-{{ section.id }}__pattern" aria-hidden="true"></div>
+  <div class="ps-{{ section.id }}__inner">
+    {%- if body != blank -%}
+      {{ body }}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Product Story",
+  "tag": "section",
+  "class": "section-griza-product-story",
+  "settings": [
+    { "type": "paragraph", "content": "Renders the product description from admin and restyles it to brand. Edit the copy on the product itself." },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "content_w", "min": 600, "max": 1400, "step": 20, "unit": "px", "label": "Content Max Width", "default": 900 },
+    { "type": "range", "id": "usage_cols", "min": 1, "max": 4, "step": 1, "label": "Usage Card Columns (Desktop)", "default": 3 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Top (Desktop)", "default": 72 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 80 },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Top (Mobile)", "default": 44 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 48 },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_fs_d", "min": 18, "max": 72, "step": 1, "unit": "px", "label": "Section Title (Desktop)", "default": 34 },
+    { "type": "range", "id": "title_fs_m", "min": 16, "max": 48, "step": 1, "unit": "px", "label": "Section Title (Mobile)", "default": 26 },
+    { "type": "range", "id": "hook_fs_d", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Lead Paragraph (Desktop)", "default": 22 },
+    { "type": "range", "id": "hook_fs_m", "min": 14, "max": 32, "step": 1, "unit": "px", "label": "Lead Paragraph (Mobile)", "default": 18 },
+    { "type": "range", "id": "body_fs", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Body Text", "default": 17 },
+    { "type": "range", "id": "stat_fs_d", "min": 20, "max": 80, "step": 1, "unit": "px", "label": "Stat Value (Desktop)", "default": 38 },
+    { "type": "range", "id": "stat_fs_m", "min": 18, "max": 60, "step": 1, "unit": "px", "label": "Stat Value (Mobile)", "default": 30 },
+    { "type": "range", "id": "quote_fs_d", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Pull Quote (Desktop)", "default": 20 },
+    { "type": "range", "id": "quote_fs_m", "min": 14, "max": 32, "step": 1, "unit": "px", "label": "Pull Quote (Mobile)", "default": 17 },
+    { "type": "range", "id": "cta_fs_d", "min": 16, "max": 60, "step": 1, "unit": "px", "label": "Closing Statement (Desktop)", "default": 30 },
+    { "type": "range", "id": "cta_fs_m", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Closing Statement (Mobile)", "default": 22 },
+
+    { "type": "header", "content": "Background Pattern" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Tiled Pattern" },
+    { "type": "range", "id": "pattern_size", "min": 100, "max": 800, "step": 10, "unit": "px", "label": "Tile Size", "default": 380 },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "Pattern Opacity", "default": 6 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#FEFADE" },
+    { "type": "color", "id": "txt_color", "label": "Text", "default": "#2E255F" },
+    { "type": "color", "id": "accent_color", "label": "Accent (orange)", "default": "#ED6D1D" },
+    { "type": "color", "id": "ink_color", "label": "Panels (navy)", "default": "#1D1939" },
+    { "type": "color", "id": "card_color", "label": "Card / Panel Text", "default": "#FEFADF" }
+  ],
+  "presets": [
+    { "name": "Griza Product Story" }
+  ]
+}
+{% endschema %}

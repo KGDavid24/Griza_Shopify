@@ -66,8 +66,11 @@ html[scroll-lock] .page-wrapper {
   }
 }
 
+/* Drawers overlay the page instead of squeezing it, so the page must not
+   reserve space for them. Kept as a no-op rule (rather than deleted) because
+   theme-drawer.liquid still toggles this class on open/close/restore. */
 .page-wrapper--drawer-open {
-  margin-right: var(--theme-drawer-width, var(--sidebar-width));
+  margin-right: 0;
   transition-timing-function: var(--animation-timing-fade-in);
 }
 

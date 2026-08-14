@@ -1,0 +1,820 @@
+{%- comment -%}
+  Section: Griza Featured Product V1.5
+  Two-column shoppable layout (stage left / buy panel right) with a
+  two-line masthead, a full-width stats strip and a single marquee band.
+  Cart submission uses Shopify's native product form.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign p = s.product
+  assign v = p.selected_or_first_available_variant
+  assign bottle = s.bottle_img | default: p.featured_image
+
+  # Liquid resolves and/or right-to-left, so resolve marquee placement up front
+  assign show_marquee_top = false
+  assign show_marquee_bottom = false
+  if s.marquee_txt != blank
+    if s.marquee_mode == 'top' or s.marquee_mode == 'both'
+      assign show_marquee_top = true
+    endif
+    if s.marquee_mode == 'bottom' or s.marquee_mode == 'both'
+      assign show_marquee_bottom = true
+    endif
+  endif
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if s.custom_font_filename != blank %}
+    {%- assign font_ext = s.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ s.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+
+    --g-display: {% if s.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+    --g-bg: {{ s.bg_color }};
+    --g-txt: {{ s.txt_color }};
+    --g-accent: {{ s.accent_color }};
+    --g-ink: {{ s.ink_color }};
+  }
+
+  .g15-{{ section.id }} {
+    position: relative;
+    background-color: var(--g-bg);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .g15-{{ section.id }}__bgpattern {
+    position: absolute;
+    inset: 0;
+    {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 900 }}');
+      background-repeat: repeat;
+      background-size: {{ s.pattern_size_m }}px;
+      opacity: {{ s.pattern_opac | divided_by: 100.0 }};
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---------------- MARQUEE ---------------- */
+  .g15-{{ section.id }}__marquee {
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+    background: var(--g-accent);
+    padding: 8px 0;
+  }
+
+  .g15-{{ section.id }}__track {
+    display: flex;
+    width: max-content;
+    animation: g15marquee-{{ section.id }} {{ s.marquee_speed }}s linear infinite;
+  }
+
+  .g15-{{ section.id }}__track span {
+    font-family: var(--g-display);
+    font-size: {{ s.marquee_fs_m }}px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--g-ink);
+    padding-right: 34px;
+    white-space: nowrap;
+  }
+
+  @keyframes g15marquee-{{ section.id }} {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ---------------- BODY GRID ---------------- */
+  .g15-{{ section.id }}__body {
+    position: relative;
+    z-index: 2;
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  /* ---------------- STAGE ---------------- */
+  .g15-{{ section.id }}__stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
+  }
+
+  .g15-{{ section.id }}__halo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: {{ s.halo_w_m }}%;
+    max-width: none;
+    height: auto;
+    transform: translate(-50%, -50%) rotate({{ s.halo_rotate }}deg);
+    opacity: {{ s.halo_opac | divided_by: 100.0 }};
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .g15-{{ section.id }}__bottle {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: {{ s.bottle_max_w_m }}px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 24px 40px rgba(0,0,0,0.4));
+  }
+
+  .g15-{{ section.id }}__chain {
+    position: absolute;
+    z-index: 3;
+    top: {{ s.chain_top_m }}%;
+    right: {{ s.chain_right_m }}%;
+    width: {{ s.chain_w_m }}%;
+    max-width: none;
+    height: auto;
+    transform: rotate({{ s.chain_rotate_m }}deg);
+    pointer-events: none;
+  }
+
+  .g15-{{ section.id }}__stamp {
+    position: absolute;
+    z-index: 4;
+    bottom: {{ s.stamp_bottom_m }}%;
+    left: {{ s.stamp_left_m }}%;
+    width: {{ s.stamp_w_m }}%;
+    max-width: none;
+    height: auto;
+    transform: rotate({{ s.stamp_rotate }}deg);
+    pointer-events: none;
+  }
+
+  /* ---------------- PANEL ---------------- */
+  .g15-{{ section.id }}__panel {
+    position: relative;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .g15-{{ section.id }}__eyebrow {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--g-accent);
+    margin: 0 0 14px;
+  }
+
+  .g15-{{ section.id }}__masthead {
+    margin: 0 0 18px;
+    color: var(--g-txt);
+    text-transform: uppercase;
+    line-height: {{ s.masthead_lh }};
+  }
+
+  .g15-{{ section.id }}__mast-sm {
+    display: block;
+    font-family: var(--g-display);
+    font-size: {{ s.mast_sm_fs_m }}px;
+    letter-spacing: 0.03em;
+  }
+
+  .g15-{{ section.id }}__mast-lg {
+    display: block;
+    font-family: var(--g-display);
+    font-size: {{ s.mast_lg_fs_m }}px;
+    letter-spacing: -0.01em;
+    color: var(--g-accent);
+  }
+
+  .g15-{{ section.id }}__tagline {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: {{ s.tagline_fs_m }}px;
+    line-height: 1.3;
+    color: var(--g-txt);
+    margin: 0 0 20px;
+    max-width: 46ch;
+  }
+
+  .g15-{{ section.id }}__pricewrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 0 0 24px;
+  }
+
+  .g15-{{ section.id }}__price {
+    display: inline-block;
+    font-family: var(--g-display);
+    font-size: {{ s.price_fs_m }}px;
+    line-height: 1;
+    color: var(--g-txt);
+    background: var(--g-accent);
+    padding: 10px 22px 6px;
+    transform: rotate({{ s.price_rotate }}deg);
+    box-shadow: 7px 7px 0 0 var(--g-ink);
+    white-space: nowrap;
+  }
+
+  .g15-{{ section.id }}__taxnote {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--g-txt);
+    opacity: 0.6;
+  }
+
+  .g15-{{ section.id }}__desc {
+    font-family: 'Barlow', sans-serif;
+    font-size: {{ s.desc_fs }}px;
+    line-height: 1.6;
+    color: var(--g-txt);
+    opacity: 0.9;
+    margin: 0 0 26px;
+    max-width: 58ch;
+  }
+
+  .g15-{{ section.id }}__desc p { margin: 0 0 12px; }
+  .g15-{{ section.id }}__desc p:last-child { margin-bottom: 0; }
+
+  /* ---------------- FORM ---------------- */
+  .g15-{{ section.id }} .g15-form { width: 100%; }
+
+  .g15-{{ section.id }}__optlabel {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--g-txt);
+    opacity: 0.7;
+    margin: 0 0 10px;
+  }
+
+  .g15-{{ section.id }}__variants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 24px;
+    border: 0;
+    padding: 0;
+  }
+
+  .g15-{{ section.id }}__variants legend {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .g15-{{ section.id }}__vopt input {
+    position: absolute;
+    opacity: 0;
+    width: 1px; height: 1px;
+    pointer-events: none;
+  }
+
+  .g15-{{ section.id }}__vopt span {
+    display: inline-block;
+    font-family: var(--g-display);
+    font-size: 21px;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 14px 24px 10px;
+    color: var(--g-txt);
+    border: 2px solid var(--g-txt);
+    cursor: pointer;
+    transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+  }
+
+  .g15-{{ section.id }}__vopt input:checked + span {
+    background: var(--g-accent);
+    border-color: var(--g-accent);
+    transform: translateY(-2px);
+  }
+
+  .g15-{{ section.id }}__vopt input:focus-visible + span {
+    outline: 3px solid var(--g-txt);
+    outline-offset: 3px;
+  }
+
+  .g15-{{ section.id }}__vopt input:disabled + span {
+    opacity: 0.4;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+
+  .g15-{{ section.id }}__actions {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .g15-{{ section.id }}__qty {
+    display: flex;
+    align-items: center;
+    border: 2px solid var(--g-txt);
+    flex: 0 0 auto;
+  }
+
+  .g15-{{ section.id }}__qty button {
+    background: none;
+    border: 0;
+    color: var(--g-txt);
+    font-family: 'Barlow', sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    width: 44px;
+    min-height: 58px;
+    cursor: pointer;
+  }
+
+  .g15-{{ section.id }}__qty input {
+    width: 46px;
+    text-align: center;
+    background: transparent;
+    border: 0;
+    color: var(--g-txt);
+    font-family: var(--g-display);
+    font-size: 22px;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .g15-{{ section.id }}__qty input::-webkit-outer-spin-button,
+  .g15-{{ section.id }}__qty input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .g15-{{ section.id }}__submit {
+    flex: 1 1 240px;
+    min-height: 58px;
+    border: 0;
+    cursor: pointer;
+    background: var(--g-accent);
+    color: var(--g-txt);
+    font-family: var(--g-display);
+    font-size: {{ s.btn_fs_m }}px;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 16px 34px 12px;
+    clip-path: polygon(0% 0%, 94% 0%, 97% 10%, 94% 20%, 100% 32%, 95% 48%, 100% 62%, 94% 78%, 98% 90%, 93% 100%, 0% 100%);
+    transition: transform .18s ease, filter .18s ease;
+  }
+
+  .g15-{{ section.id }}__submit:hover:not([disabled]) {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+  }
+
+  .g15-{{ section.id }}__submit[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  .g15-{{ section.id }}__meta {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--g-accent);
+    margin: 20px 0 0;
+  }
+
+  .g15-{{ section.id }}__link {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--g-txt);
+    opacity: 0.7;
+    text-underline-offset: 4px;
+  }
+
+  .g15-{{ section.id }}__link:hover { opacity: 1; }
+
+  /* ---------------- STATS STRIP (spans both columns) ---------------- */
+  .g15-{{ section.id }}__stats {
+    position: relative;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 0;
+    padding: 24px 0;
+    border-top: 3px solid var(--g-accent);
+    border-bottom: 3px solid var(--g-accent);
+    text-align: center;
+  }
+
+  .g15-{{ section.id }}__stat { padding: 0 10px; }
+
+  .g15-{{ section.id }}__stat + .g15-{{ section.id }}__stat {
+    border-left: 2px solid rgba(255,255,255,0.14);
+  }
+
+  .g15-{{ section.id }}__stat:nth-child(odd) { border-left: 0; }
+
+  .g15-{{ section.id }}__stat-val {
+    display: block;
+    font-family: var(--g-display);
+    font-size: {{ s.stat_val_fs_m }}px;
+    line-height: 1;
+    color: var(--g-accent);
+    text-transform: uppercase;
+  }
+
+  .g15-{{ section.id }}__stat-lbl {
+    display: block;
+    margin-top: 6px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-txt);
+    opacity: 0.7;
+  }
+
+  /* ---------------- DESKTOP ---------------- */
+  @media screen and (min-width: 750px) {
+    .g15-{{ section.id }}__bgpattern { background-size: {{ s.pattern_size }}px; }
+    .g15-{{ section.id }}__track span { font-size: {{ s.marquee_fs }}px; padding-right: 52px; }
+
+    .g15-{{ section.id }}__body {
+      padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px;
+      grid-template-columns: {{ s.col_w }}fr {{ 100 | minus: s.col_w }}fr;
+      column-gap: {{ s.grid_gap }}px;
+      row-gap: {{ s.stats_mt }}px;
+    }
+
+    .g15-{{ section.id }}__stats { grid-column: 1 / -1; }
+
+    .g15-{{ section.id }}__bottle { max-width: {{ s.bottle_max_w }}px; }
+    .g15-{{ section.id }}__halo   { width: {{ s.halo_w_d }}%; }
+
+    .g15-{{ section.id }}__chain {
+      top: {{ s.chain_top_d }}%;
+      right: {{ s.chain_right_d }}%;
+      width: {{ s.chain_w_d }}%;
+      transform: rotate({{ s.chain_rotate_d }}deg);
+    }
+
+    .g15-{{ section.id }}__stamp {
+      bottom: {{ s.stamp_bottom_d }}%;
+      left: {{ s.stamp_left_d }}%;
+      width: {{ s.stamp_w_d }}%;
+    }
+
+    .g15-{{ section.id }}__mast-sm { font-size: {{ s.mast_sm_fs_d }}px; }
+    .g15-{{ section.id }}__mast-lg { font-size: {{ s.mast_lg_fs_d }}px; }
+    .g15-{{ section.id }}__tagline { font-size: {{ s.tagline_fs_d }}px; }
+    .g15-{{ section.id }}__price   { font-size: {{ s.price_fs_d }}px; }
+    .g15-{{ section.id }}__submit  { font-size: {{ s.btn_fs_d }}px; }
+
+    .g15-{{ section.id }}__stats {
+      grid-template-columns: repeat({{ s.stats_cols }}, 1fr);
+      padding: 28px 0;
+    }
+    .g15-{{ section.id }}__stat { padding: 0 24px; }
+    .g15-{{ section.id }}__stat:nth-child(odd) { border-left: 2px solid rgba(255,255,255,0.14); }
+    .g15-{{ section.id }}__stat:first-child { border-left: 0; }
+    .g15-{{ section.id }}__stat-val { font-size: {{ s.stat_val_fs }}px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .g15-{{ section.id }}__track { animation: none; }
+    .g15-{{ section.id }}__submit,
+    .g15-{{ section.id }}__vopt span { transition: none; }
+  }
+{%- endstyle -%}
+
+{%- capture marquee_group -%}
+  {%- for i in (1..6) -%}
+    <span>{{ s.marquee_txt | escape }}</span>
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- capture marquee_band -%}
+  <div class="g15-{{ section.id }}__marquee" aria-hidden="true">
+    <div class="g15-{{ section.id }}__track">{{ marquee_group }}{{ marquee_group }}</div>
+  </div>
+{%- endcapture -%}
+
+<section class="g15-{{ section.id }}" id="g15-{{ section.id }}">
+  <div class="g15-{{ section.id }}__bgpattern" aria-hidden="true"></div>
+
+  {%- if show_marquee_top -%}
+    {{ marquee_band }}
+  {%- endif -%}
+
+  <div class="g15-{{ section.id }}__body">
+
+    <!-- ===== STAGE ===== -->
+    <div class="g15-{{ section.id }}__stage">
+      {%- if s.halo_img != blank -%}
+        <img src="{{ s.halo_img | image_url: width: 1400 }}" alt="" aria-hidden="true"
+             class="g15-{{ section.id }}__halo" loading="lazy">
+      {%- endif -%}
+
+      {%- if bottle != blank -%}
+        <img src="{{ bottle | image_url: width: 1200 }}"
+             alt="{{ bottle.alt | default: p.title | escape }}"
+             class="g15-{{ section.id }}__bottle" loading="lazy">
+      {%- else -%}
+        {{ 'product-apparel-1' | placeholder_svg_tag }}
+      {%- endif -%}
+
+      {%- if s.chain_img != blank -%}
+        <img src="{{ s.chain_img | image_url: width: 900 }}" alt="" aria-hidden="true"
+             class="g15-{{ section.id }}__chain" loading="lazy">
+      {%- endif -%}
+
+      {%- if s.stamp_img != blank -%}
+        <img src="{{ s.stamp_img | image_url: width: 600 }}" alt="" aria-hidden="true"
+             class="g15-{{ section.id }}__stamp" loading="lazy">
+      {%- endif -%}
+    </div>
+
+    <!-- ===== BUY PANEL ===== -->
+    <div class="g15-{{ section.id }}__panel">
+      {%- if s.eyebrow_txt != blank -%}
+        <p class="g15-{{ section.id }}__eyebrow">{{ s.eyebrow_txt | escape }}</p>
+      {%- endif -%}
+
+      <h2 class="g15-{{ section.id }}__masthead">
+        {%- if s.mast_sm_txt != blank -%}
+          <span class="g15-{{ section.id }}__mast-sm">{{ s.mast_sm_txt | escape }}</span>
+        {%- endif -%}
+        {%- if s.mast_lg_txt != blank -%}
+          <span class="g15-{{ section.id }}__mast-lg">{{ s.mast_lg_txt | escape }}</span>
+        {%- endif -%}
+      </h2>
+
+      {%- if s.tagline_txt != blank -%}
+        <p class="g15-{{ section.id }}__tagline">{{ s.tagline_txt | escape }}</p>
+      {%- endif -%}
+
+      {%- if p != blank -%}
+        <div class="g15-{{ section.id }}__pricewrap">
+          <span class="g15-{{ section.id }}__price" data-g15-price>{{ v.price | money }}</span>
+          {%- if cart.taxes_included -%}
+            <span class="g15-{{ section.id }}__taxnote">{{ 'content.taxes_included' | t }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if s.desc_rich != blank -%}
+        <div class="g15-{{ section.id }}__desc">{{ s.desc_rich }}</div>
+      {%- endif -%}
+
+      {%- if p != blank -%}
+        {%- form 'product', p, class: 'g15-form' -%}
+          {%- if p.variants.size > 1 -%}
+            <p class="g15-{{ section.id }}__optlabel">{{ p.options.first }}</p>
+            <fieldset class="g15-{{ section.id }}__variants">
+              <legend>{{ p.options.first }}</legend>
+              {%- for variant in p.variants -%}
+                <label class="g15-{{ section.id }}__vopt">
+                  <input type="radio" name="id" value="{{ variant.id }}"
+                    data-price="{{ variant.price | money }}"
+                    {% if variant.id == v.id %}checked{% endif %}
+                    {% unless variant.available %}disabled{% endunless %}>
+                  <span>{{ variant.title }}</span>
+                </label>
+              {%- endfor -%}
+            </fieldset>
+          {%- else -%}
+            <input type="hidden" name="id" value="{{ v.id }}">
+          {%- endif -%}
+
+          <div class="g15-{{ section.id }}__actions">
+            <div class="g15-{{ section.id }}__qty">
+              <button type="button" data-g15-qty="-1" aria-label="Scade cantitatea">&minus;</button>
+              <input type="number" name="quantity" value="1" min="1" inputmode="numeric" aria-label="Cantitate">
+              <button type="button" data-g15-qty="1" aria-label="Crește cantitatea">+</button>
+            </div>
+
+            <button type="submit" class="g15-{{ section.id }}__submit" {% unless v.available %}disabled{% endunless %}>
+              {%- if v.available -%}{{ s.btn_lbl }}{%- else -%}Stoc epuizat{%- endif -%}
+            </button>
+          </div>
+        {%- endform -%}
+      {%- endif -%}
+
+      {%- if s.meta_txt != blank -%}
+        <p class="g15-{{ section.id }}__meta">{{ s.meta_txt | escape }}</p>
+      {%- endif -%}
+
+      {%- if p != blank and s.link_lbl != blank -%}
+        <a href="{{ p.url }}" class="g15-{{ section.id }}__link">{{ s.link_lbl | escape }}</a>
+      {%- endif -%}
+    </div>
+
+    <!-- ===== STATS STRIP ===== -->
+    {%- if section.blocks.size > 0 -%}
+      <div class="g15-{{ section.id }}__stats">
+        {%- for block in section.blocks -%}
+          <div class="g15-{{ section.id }}__stat" {{ block.shopify_attributes }}>
+            <span class="g15-{{ section.id }}__stat-val">{{ block.settings.value | escape }}</span>
+            <span class="g15-{{ section.id }}__stat-lbl">{{ block.settings.label | escape }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- if show_marquee_bottom -%}
+    {{ marquee_band }}
+  {%- endif -%}
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById('g15-{{ section.id }}');
+    if (!root) return;
+
+    var priceEl = root.querySelector('[data-g15-price]');
+    root.querySelectorAll('input[name="id"]').forEach(function (input) {
+      input.addEventListener('change', function () {
+        if (priceEl && input.dataset.price) priceEl.textContent = input.dataset.price;
+      });
+    });
+
+    var qtyInput = root.querySelector('input[name="quantity"]');
+    root.querySelectorAll('[data-g15-qty]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (!qtyInput) return;
+        var next = (parseInt(qtyInput.value, 10) || 1) + parseInt(btn.dataset.g15Qty, 10);
+        qtyInput.value = next < 1 ? 1 : next;
+        qtyInput.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Griza Featured V1.5",
+  "tag": "section",
+  "class": "section-griza-featured-product-v15",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product" },
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "default": "bebasneuepro-bold.otf" },
+
+    { "type": "header", "content": "Marquee Band" },
+    {
+      "type": "select", "id": "marquee_mode", "label": "Marquee Position", "default": "bottom",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "top", "label": "Top only" },
+        { "value": "bottom", "label": "Bottom only" },
+        { "value": "both", "label": "Top and bottom" }
+      ]
+    },
+    { "type": "text", "id": "marquee_txt", "label": "Marquee Text", "default": "50% GHIMBIR ★ BAZĂ INTENSĂ ★" },
+    { "type": "range", "id": "marquee_speed", "min": 10, "max": 90, "step": 5, "unit": "s", "label": "Scroll Duration", "default": 45 },
+    { "type": "range", "id": "marquee_fs", "min": 12, "max": 48, "step": 1, "unit": "px", "label": "Marquee Size (Desktop)", "default": 22 },
+    { "type": "range", "id": "marquee_fs_m", "min": 10, "max": 36, "step": 1, "unit": "px", "label": "Marquee Size (Mobile)", "default": 17 },
+
+    { "type": "header", "content": "Masthead & Copy" },
+    { "type": "text", "id": "eyebrow_txt", "label": "Eyebrow", "default": "PRODUS RECOMANDAT" },
+    { "type": "text", "id": "mast_sm_txt", "label": "Masthead Line 1", "default": "SIROP DE GHIMBIR" },
+    { "type": "text", "id": "mast_lg_txt", "label": "Masthead Line 2 (large)", "default": "GRIZA" },
+    { "type": "range", "id": "mast_sm_fs_d", "min": 16, "max": 120, "step": 2, "unit": "px", "label": "Line 1 Size (Desktop)", "default": 42 },
+    { "type": "range", "id": "mast_sm_fs_m", "min": 14, "max": 70, "step": 2, "unit": "px", "label": "Line 1 Size (Mobile)", "default": 26 },
+    { "type": "range", "id": "mast_lg_fs_d", "min": 40, "max": 260, "step": 4, "unit": "px", "label": "Line 2 Size (Desktop)", "default": 120 },
+    { "type": "range", "id": "mast_lg_fs_m", "min": 24, "max": 160, "step": 2, "unit": "px", "label": "Line 2 Size (Mobile)", "default": 68 },
+    { "type": "range", "id": "masthead_lh", "min": 0.6, "max": 1.4, "step": 0.1, "label": "Masthead Line Height", "default": 0.9 },
+    { "type": "textarea", "id": "tagline_txt", "label": "Tagline", "default": "Gust intens de ghimbir, fără compromisuri." },
+    { "type": "richtext", "id": "desc_rich", "label": "Description", "default": "<p>Sirop concentrat din ghimbir, cu zeamă de lămâie & zahăr invertit. Pentru limonade, ceaiuri, cocktailuri & mocktailuri.</p>" },
+    { "type": "range", "id": "tagline_fs_d", "min": 12, "max": 34, "step": 1, "unit": "px", "label": "Tagline Size (Desktop)", "default": 20 },
+    { "type": "range", "id": "tagline_fs_m", "min": 12, "max": 28, "step": 1, "unit": "px", "label": "Tagline Size (Mobile)", "default": 17 },
+    { "type": "range", "id": "desc_fs", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Description Size", "default": 16 },
+
+    { "type": "header", "content": "Stage Composition" },
+    { "type": "image_picker", "id": "bottle_img", "label": "Bottle / Product Image" },
+    { "type": "range", "id": "bottle_max_w", "min": 200, "max": 700, "step": 10, "unit": "px", "label": "Bottle Max Width (Desktop)", "default": 430 },
+    { "type": "range", "id": "bottle_max_w_m", "min": 150, "max": 500, "step": 10, "unit": "px", "label": "Bottle Max Width (Mobile)", "default": 270 },
+    { "type": "image_picker", "id": "halo_img", "label": "Halo (behind bottle)" },
+    { "type": "range", "id": "halo_w_d", "min": 40, "max": 200, "step": 5, "unit": "%", "label": "Halo Width (Desktop)", "default": 105 },
+    { "type": "range", "id": "halo_w_m", "min": 40, "max": 200, "step": 5, "unit": "%", "label": "Halo Width (Mobile)", "default": 125 },
+    { "type": "range", "id": "halo_rotate", "min": -45, "max": 45, "step": 1, "unit": "deg", "label": "Halo Rotation", "default": 8 },
+    { "type": "range", "id": "halo_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Halo Opacity", "default": 80 },
+
+    { "type": "header", "content": "Chain Overlay" },
+    { "type": "image_picker", "id": "chain_img", "label": "Broken Chain" },
+    { "type": "range", "id": "chain_w_d", "min": 10, "max": 120, "step": 2, "unit": "%", "label": "Chain Width (Desktop)", "default": 50 },
+    { "type": "range", "id": "chain_w_m", "min": 10, "max": 120, "step": 2, "unit": "%", "label": "Chain Width (Mobile)", "default": 62 },
+    { "type": "number", "id": "chain_top_d", "label": "Chain Top % (Desktop)", "default": -6 },
+    { "type": "number", "id": "chain_right_d", "label": "Chain Right % (Desktop)", "default": -4 },
+    { "type": "number", "id": "chain_top_m", "label": "Chain Top % (Mobile)", "default": -4 },
+    { "type": "number", "id": "chain_right_m", "label": "Chain Right % (Mobile)", "default": -10 },
+    { "type": "range", "id": "chain_rotate_d", "min": -90, "max": 90, "step": 2, "unit": "deg", "label": "Chain Rotation (Desktop)", "default": -14 },
+    { "type": "range", "id": "chain_rotate_m", "min": -90, "max": 90, "step": 2, "unit": "deg", "label": "Chain Rotation (Mobile)", "default": -16 },
+
+    { "type": "header", "content": "Mascot Stamp" },
+    { "type": "image_picker", "id": "stamp_img", "label": "Mascot Head" },
+    { "type": "range", "id": "stamp_w_d", "min": 5, "max": 60, "step": 1, "unit": "%", "label": "Stamp Width (Desktop)", "default": 24 },
+    { "type": "range", "id": "stamp_w_m", "min": 5, "max": 60, "step": 1, "unit": "%", "label": "Stamp Width (Mobile)", "default": 30 },
+    { "type": "number", "id": "stamp_bottom_d", "label": "Stamp Bottom % (Desktop)", "default": 2 },
+    { "type": "number", "id": "stamp_left_d", "label": "Stamp Left % (Desktop)", "default": -2 },
+    { "type": "number", "id": "stamp_bottom_m", "label": "Stamp Bottom % (Mobile)", "default": 0 },
+    { "type": "number", "id": "stamp_left_m", "label": "Stamp Left % (Mobile)", "default": -6 },
+    { "type": "range", "id": "stamp_rotate", "min": -45, "max": 45, "step": 1, "unit": "deg", "label": "Stamp Rotation", "default": -12 },
+
+    { "type": "header", "content": "Stats Strip" },
+    { "type": "range", "id": "stats_cols", "min": 2, "max": 6, "step": 1, "label": "Columns (Desktop)", "default": 4 },
+    { "type": "range", "id": "stat_val_fs", "min": 20, "max": 90, "step": 2, "unit": "px", "label": "Stat Value Size (Desktop)", "default": 42 },
+    { "type": "range", "id": "stat_val_fs_m", "min": 16, "max": 70, "step": 2, "unit": "px", "label": "Stat Value Size (Mobile)", "default": 32 },
+    { "type": "range", "id": "stats_mt", "min": 0, "max": 160, "step": 4, "unit": "px", "label": "Strip Top Gap (Desktop)", "default": 56 },
+
+    { "type": "header", "content": "Buy Controls" },
+    { "type": "text", "id": "btn_lbl", "label": "Add to Cart Label", "default": "ADAUGĂ ÎN COȘ" },
+    { "type": "range", "id": "btn_fs_d", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Button Size (Desktop)", "default": 26 },
+    { "type": "range", "id": "btn_fs_m", "min": 12, "max": 34, "step": 1, "unit": "px", "label": "Button Size (Mobile)", "default": 22 },
+    { "type": "range", "id": "price_fs_d", "min": 24, "max": 120, "step": 2, "unit": "px", "label": "Price Size (Desktop)", "default": 50 },
+    { "type": "range", "id": "price_fs_m", "min": 20, "max": 80, "step": 2, "unit": "px", "label": "Price Size (Mobile)", "default": 38 },
+    { "type": "range", "id": "price_rotate", "min": -15, "max": 15, "step": 1, "unit": "deg", "label": "Price Tag Rotation", "default": -4 },
+    { "type": "textarea", "id": "meta_txt", "label": "Meta Line", "default": "Raport recomandat de diluție 1:10 · 750 ml · până la aprox. 8,25 L de băutură" },
+    { "type": "text", "id": "link_lbl", "label": "Product Page Link Label", "default": "Vezi toate detaliile produsului" },
+
+    { "type": "header", "content": "Background Pattern" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Tiled Pattern" },
+    { "type": "range", "id": "pattern_size", "min": 100, "max": 800, "step": 10, "unit": "px", "label": "Tile Size (Desktop)", "default": 340 },
+    { "type": "range", "id": "pattern_size_m", "min": 80, "max": 600, "step": 10, "unit": "px", "label": "Tile Size (Mobile)", "default": 220 },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Pattern Opacity", "default": 10 },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "content_w", "min": 900, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1400 },
+    { "type": "range", "id": "col_w", "min": 30, "max": 70, "step": 1, "unit": "%", "label": "Stage Column Width", "default": 44 },
+    { "type": "range", "id": "grid_gap", "min": 0, "max": 160, "step": 4, "unit": "px", "label": "Column Gap (Desktop)", "default": 88 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Top (Desktop)", "default": 76 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 76 },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Top (Mobile)", "default": 44 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 44 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#1D1939" },
+    { "type": "color", "id": "txt_color", "label": "Text", "default": "#FEFADF" },
+    { "type": "color", "id": "accent_color", "label": "Accent (orange)", "default": "#ED6D1D" },
+    { "type": "color", "id": "ink_color", "label": "Shadow / Ink", "default": "#0F0C22" }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "50%" },
+        { "type": "text", "id": "label", "label": "Label", "default": "ghimbir" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Griza Featured V1.5" }
+  ]
+}
+{% endschema %}

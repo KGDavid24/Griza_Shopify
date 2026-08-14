@@ -31,6 +31,16 @@
       grid-template-columns: var(--resource-list-columns);
     }
 
+    /* A lone result would otherwise sit flush-left in track 1 of an N-column
+       grid, with the rest of the row empty. Collapse to a single centred track
+       so one product reads as deliberate rather than left over. */
+    @media screen and (min-width: 750px) {
+      &:has(> *:only-child) {
+        grid-template-columns: min(var(--resource-list-solo-width, 460px), 100%);
+        justify-content: center;
+      }
+    }
+
     @container resource-list (max-width: 449px) {
       grid-template-columns: var(--resource-list-columns-mobile);
     }

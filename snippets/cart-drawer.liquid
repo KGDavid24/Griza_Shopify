@@ -136,6 +136,43 @@
   {% endif %}
 {%- endif -%}
 
+{%- comment -%}
+  Ginger field behind the cart drawer, matching the product story section.
+  Uses an inline style tag rather than the theme CSS block below because that
+  one is served as static CSS and never resolves a Liquid asset URL.
+  Two background layers - a near-opaque cream wash over the tile - so the
+  pattern reads at roughly 8% without needing a pseudo-element, which the
+  drawer already uses for its own purposes.
+{%- endcomment -%}
+{%- assign griza_drawer_pattern = 'griza-gingern-pattern.svg' | file_url -%}
+{%- if griza_drawer_pattern != blank -%}
+  {% style %}
+    #cart-drawer .theme-drawer__dialog {
+      background-image:
+        linear-gradient(rgba(254, 250, 222, 0.92), rgba(254, 250, 222, 0.92)),
+        url('{{ griza_drawer_pattern }}');
+      background-repeat: repeat, repeat;
+      background-size: auto, 300px;
+      background-position: center, top center;
+      background-attachment: local, local;
+    }
+
+    /* The content wrapper paints its own opaque cream over the full panel,
+       which left the pattern visible only in the header strip above it. */
+    #cart-drawer .cart-drawer__content,
+    #cart-drawer .cart-drawer__items,
+    #cart-drawer .cart-drawer__summary {
+      background-color: transparent;
+    }
+
+    @media screen and (max-width: 749px) {
+      #cart-drawer .theme-drawer__dialog {
+        background-size: auto, 220px;
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
+
 {% stylesheet %}
   cart-drawer-component {
     --cart-drawer-padding: var(--theme-drawer-padding);

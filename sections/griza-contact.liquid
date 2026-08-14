@@ -1,0 +1,449 @@
+{%- comment -%}
+  Section: Griza Contact
+  Branded contact form. Uses Shopify's native {% form 'contact' %}.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign intro_body = page.content | default: s.body_txt
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if s.custom_font_filename != blank %}
+    {%- assign font_ext = s.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ s.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+
+    --gc-display: {% if s.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+    --gc-bg: {{ s.bg_color }};
+    --gc-txt: {{ s.txt_color }};
+    --gc-accent: {{ s.accent_color }};
+    --gc-ink: {{ s.ink_color }};
+    --gc-field-bg: {{ s.field_bg_color }};
+    --gc-field-txt: {{ s.field_txt_color }};
+  }
+
+  .gc-{{ section.id }} {
+    position: relative;
+    background-color: var(--gc-bg);
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px;
+    box-sizing: border-box;
+    overflow: hidden;
+    /* Marks the boundary - the footer is the same navy, so without this
+       the two sections read as one continuous block */
+    border-bottom: {{ s.edge_h }}px solid {{ s.edge_color }};
+  }
+
+  .gc-{{ section.id }}__bgpattern {
+    position: absolute;
+    inset: 0;
+    {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 900 }}');
+      background-repeat: repeat;
+      background-size: {{ s.pattern_size_m }}px;
+      opacity: {{ s.pattern_opac | divided_by: 100.0 }};
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .gc-{{ section.id }}__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  /* ---------- INTRO ---------- */
+  .gc-{{ section.id }}__eyebrow {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gc-accent);
+    margin: 0 0 14px;
+  }
+
+  .gc-{{ section.id }}__title {
+    font-family: var(--gc-display);
+    font-size: {{ s.title_fs_m }}px;
+    line-height: {{ s.title_lh }};
+    text-transform: uppercase;
+    color: var(--gc-txt);
+    margin: 0 0 20px;
+  }
+
+  .gc-{{ section.id }}__body {
+    font-family: 'Barlow', sans-serif;
+    font-size: {{ s.body_fs }}px;
+    line-height: 1.6;
+    color: var(--gc-txt);
+    opacity: 0.9;
+    margin: 0 0 26px;
+    max-width: 52ch;
+  }
+
+  .gc-{{ section.id }}__body p { margin: 0 0 12px; }
+  .gc-{{ section.id }}__body p:last-child { margin-bottom: 0; }
+
+  .gc-{{ section.id }}__mascot {
+    width: 100%;
+    max-width: {{ s.mascot_max_w_m }}px;
+    height: auto;
+    display: block;
+    margin-top: 8px;
+  }
+
+  /* ---------- FORM ---------- */
+  .gc-{{ section.id }} .gc-form { width: 100%; }
+
+  .gc-{{ section.id }}__field { margin: 0 0 18px; }
+
+  .gc-{{ section.id }}__label {
+    display: block;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gc-txt);
+    opacity: 0.75;
+    margin: 0 0 8px;
+  }
+
+  .gc-{{ section.id }}__input,
+  .gc-{{ section.id }}__textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 18px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: {{ s.field_fs }}px;
+    color: var(--gc-field-txt);
+    background-color: var(--gc-field-bg);
+    border: 3px solid var(--gc-accent);
+    outline: none;
+  }
+
+  .gc-{{ section.id }}__textarea {
+    min-height: {{ s.textarea_h }}px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .gc-{{ section.id }}__input::placeholder,
+  .gc-{{ section.id }}__textarea::placeholder {
+    color: var(--gc-field-txt);
+    opacity: 0.45;
+    font-weight: 400;
+  }
+
+  .gc-{{ section.id }}__input:focus-visible,
+  .gc-{{ section.id }}__textarea:focus-visible {
+    outline: 3px solid var(--gc-txt);
+    outline-offset: 3px;
+  }
+
+  .gc-{{ section.id }}__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: {{ s.btn_min_w }}px;
+    min-height: 58px;
+    border: 0;
+    cursor: pointer;
+    background: var(--gc-accent);
+    color: var(--gc-txt);
+    font-family: var(--gc-display);
+    font-size: {{ s.btn_fs_m }}px;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 16px 34px 12px;
+    clip-path: polygon(0% 0%, 94% 0%, 97% 10%, 94% 20%, 100% 32%, 95% 48%, 100% 62%, 94% 78%, 98% 90%, 93% 100%, 0% 100%);
+    transition: transform .18s ease, filter .18s ease;
+  }
+
+  .gc-{{ section.id }}__submit:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+  }
+
+  .gc-{{ section.id }}__smallprint {
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--gc-txt);
+    opacity: 0.6;
+    margin: 16px 0 0;
+    max-width: 56ch;
+  }
+
+  .gc-{{ section.id }}__smallprint a {
+    color: var(--gc-accent);
+    text-underline-offset: 3px;
+  }
+
+  .gc-{{ section.id }}__success {
+    font-family: var(--gc-display);
+    font-size: 26px;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: var(--gc-txt);
+    background: var(--gc-accent);
+    margin: 0;
+    padding: 22px 26px;
+    box-shadow: 8px 8px 0 0 var(--gc-ink);
+  }
+
+  .gc-{{ section.id }}__errors {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gc-field-txt);
+    background: var(--gc-field-bg);
+    border-left: 4px solid var(--gc-accent);
+    padding: 12px 16px;
+    margin: 0 0 20px;
+  }
+
+  .gc-{{ section.id }}__errors ul { margin: 0; padding-left: 18px; }
+
+  /* ---------- DESKTOP ---------- */
+  @media screen and (min-width: 750px) {
+    .gc-{{ section.id }} {
+      padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px;
+    }
+
+    .gc-{{ section.id }}__bgpattern { background-size: {{ s.pattern_size }}px; }
+
+    .gc-{{ section.id }}__inner {
+      grid-template-columns: {{ s.col_w }}fr {{ 100 | minus: s.col_w }}fr;
+      gap: {{ s.grid_gap }}px;
+    }
+
+    .gc-{{ section.id }}__title  { font-size: {{ s.title_fs_d }}px; }
+    .gc-{{ section.id }}__submit { font-size: {{ s.btn_fs_d }}px; }
+    .gc-{{ section.id }}__mascot { max-width: {{ s.mascot_max_w }}px; }
+
+    .gc-{{ section.id }}__row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .gc-{{ section.id }}__row .gc-{{ section.id }}__field { margin-bottom: 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gc-{{ section.id }}__submit { transition: none; }
+  }
+{%- endstyle -%}
+
+<section class="gc-{{ section.id }}" id="gc-{{ section.id }}">
+  <div class="gc-{{ section.id }}__bgpattern" aria-hidden="true"></div>
+
+  <div class="gc-{{ section.id }}__inner">
+
+    <!-- ===== INTRO ===== -->
+    <div class="gc-{{ section.id }}__intro">
+      {%- if s.eyebrow_txt != blank -%}
+        <p class="gc-{{ section.id }}__eyebrow">{{ s.eyebrow_txt | escape }}</p>
+      {%- endif -%}
+
+      <h1 class="gc-{{ section.id }}__title">
+        {{ s.title_txt | default: page.title | escape }}
+      </h1>
+
+      {%- if intro_body != blank -%}
+        <div class="gc-{{ section.id }}__body">{{ intro_body }}</div>
+      {%- endif -%}
+
+      {%- if s.mascot_img != blank -%}
+        <img
+          src="{{ s.mascot_img | image_url: width: 900 }}"
+          alt=""
+          aria-hidden="true"
+          class="gc-{{ section.id }}__mascot"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </div>
+
+    <!-- ===== FORM ===== -->
+    <div class="gc-{{ section.id }}__formwrap">
+      {%- form 'contact', class: 'gc-form' -%}
+
+        {%- if form.posted_successfully? -%}
+          <p class="gc-{{ section.id }}__success">{{ s.success_txt | escape }}</p>
+        {%- else -%}
+
+          {%- if form.errors -%}
+            <div class="gc-{{ section.id }}__errors">
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+
+          <div class="gc-{{ section.id }}__row">
+            <div class="gc-{{ section.id }}__field">
+              <label class="gc-{{ section.id }}__label" for="gc-name-{{ section.id }}">{{ s.label_name | escape }}</label>
+              <input
+                class="gc-{{ section.id }}__input"
+                type="text"
+                id="gc-name-{{ section.id }}"
+                name="contact[name]"
+                value="{{ form.name }}"
+                autocomplete="name"
+              >
+            </div>
+
+            <div class="gc-{{ section.id }}__field">
+              <label class="gc-{{ section.id }}__label" for="gc-phone-{{ section.id }}">{{ s.label_phone | escape }}</label>
+              <input
+                class="gc-{{ section.id }}__input"
+                type="tel"
+                id="gc-phone-{{ section.id }}"
+                name="contact[phone]"
+                value="{{ form.phone }}"
+                autocomplete="tel"
+              >
+            </div>
+          </div>
+
+          <div class="gc-{{ section.id }}__field">
+            <label class="gc-{{ section.id }}__label" for="gc-email-{{ section.id }}">{{ s.label_email | escape }}</label>
+            <input
+              class="gc-{{ section.id }}__input"
+              type="email"
+              id="gc-email-{{ section.id }}"
+              name="contact[email]"
+              value="{{ form.email }}"
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <div class="gc-{{ section.id }}__field">
+            <label class="gc-{{ section.id }}__label" for="gc-body-{{ section.id }}">{{ s.label_message | escape }}</label>
+            <textarea
+              class="gc-{{ section.id }}__textarea"
+              id="gc-body-{{ section.id }}"
+              name="contact[body]"
+              required
+            >{{ form.body }}</textarea>
+          </div>
+
+          <button type="submit" class="gc-{{ section.id }}__submit">{{ s.btn_lbl }}</button>
+
+          {%- if s.smallprint_txt != blank -%}
+            <p class="gc-{{ section.id }}__smallprint">
+              {{- s.smallprint_txt | escape }}
+              {%- if s.privacy_link != blank and s.privacy_link_lbl != blank %}
+                <a href="{{ s.privacy_link }}">{{ s.privacy_link_lbl | escape }}</a>
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Contact",
+  "tag": "section",
+  "class": "section-griza-contact",
+  "settings": [
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "default": "bebasneuepro-bold.otf" },
+
+    { "type": "header", "content": "Intro" },
+    { "type": "text", "id": "eyebrow_txt", "label": "Eyebrow", "default": "CONTACT" },
+    { "type": "text", "id": "title_txt", "label": "Title", "info": "Leave blank to use the page title.", "default": "SCRIE-NE!" },
+    { "type": "richtext", "id": "body_txt", "label": "Intro Text", "info": "Used only when the page itself has no content.", "default": "<p>Ai o întrebare despre Griza, o comandă sau vrei să ne propui o colaborare? Scrie-ne și îți răspundem cât putem de repede.</p>" },
+    { "type": "range", "id": "body_fs", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Intro Text Size", "default": 17 },
+    { "type": "image_picker", "id": "mascot_img", "label": "Mascot Illustration" },
+    { "type": "range", "id": "mascot_max_w", "min": 100, "max": 700, "step": 10, "unit": "px", "label": "Mascot Max Width (Desktop)", "default": 340 },
+    { "type": "range", "id": "mascot_max_w_m", "min": 80, "max": 500, "step": 10, "unit": "px", "label": "Mascot Max Width (Mobile)", "default": 220 },
+
+    { "type": "header", "content": "Form" },
+    { "type": "text", "id": "label_name", "label": "Name Label", "default": "NUME" },
+    { "type": "text", "id": "label_phone", "label": "Phone Label", "default": "TELEFON" },
+    { "type": "text", "id": "label_email", "label": "Email Label", "default": "ADRESĂ DE E-MAIL" },
+    { "type": "text", "id": "label_message", "label": "Message Label", "default": "MESAJUL TĂU" },
+    { "type": "text", "id": "btn_lbl", "label": "Button Label", "default": "TRIMITE MESAJUL" },
+    { "type": "text", "id": "success_txt", "label": "Success Message", "default": "Mulțumim! Am primit mesajul și îți răspundem în curând." },
+    { "type": "range", "id": "field_fs", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Field Text Size", "default": 17 },
+    { "type": "range", "id": "textarea_h", "min": 100, "max": 400, "step": 10, "unit": "px", "label": "Message Box Height", "default": 180 },
+    { "type": "range", "id": "btn_min_w", "min": 180, "max": 600, "step": 10, "unit": "px", "label": "Button Min Width", "default": 280 },
+    { "type": "range", "id": "btn_fs_d", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Button Size (Desktop)", "default": 26 },
+    { "type": "range", "id": "btn_fs_m", "min": 12, "max": 34, "step": 1, "unit": "px", "label": "Button Size (Mobile)", "default": 22 },
+    { "type": "text", "id": "smallprint_txt", "label": "Small Print", "default": "Folosim datele tale doar pentru a-ți răspunde la mesaj. Detalii în" },
+    { "type": "text", "id": "privacy_link_lbl", "label": "Privacy Link Label", "default": "Politica de confidențialitate." },
+    { "type": "url", "id": "privacy_link", "label": "Privacy Link" },
+
+    { "type": "header", "content": "Background Pattern" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Tiled Pattern" },
+    { "type": "range", "id": "pattern_size", "min": 100, "max": 800, "step": 10, "unit": "px", "label": "Tile Size (Desktop)", "default": 340 },
+    { "type": "range", "id": "pattern_size_m", "min": 80, "max": 600, "step": 10, "unit": "px", "label": "Tile Size (Mobile)", "default": 220 },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Pattern Opacity", "default": 10 },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "content_w", "min": 800, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1200 },
+    { "type": "range", "id": "col_w", "min": 30, "max": 70, "step": 1, "unit": "%", "label": "Intro Column Width", "default": 44 },
+    { "type": "range", "id": "grid_gap", "min": 0, "max": 160, "step": 4, "unit": "px", "label": "Column Gap (Desktop)", "default": 72 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Top (Desktop)", "default": 72 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 72 },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Top (Mobile)", "default": 44 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 150, "step": 2, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 44 },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_fs_d", "min": 30, "max": 160, "step": 2, "unit": "px", "label": "Title Size (Desktop)", "default": 88 },
+    { "type": "range", "id": "title_fs_m", "min": 24, "max": 90, "step": 2, "unit": "px", "label": "Title Size (Mobile)", "default": 48 },
+    { "type": "range", "id": "title_lh", "min": 0.6, "max": 1.4, "step": 0.1, "label": "Title Line Height", "default": 0.9 },
+
+    { "type": "header", "content": "Bottom Edge" },
+    { "type": "range", "id": "edge_h", "min": 0, "max": 20, "step": 1, "unit": "px", "label": "Bottom Rule Thickness", "info": "Separates this section from the footer, which uses the same background.", "default": 6 },
+    { "type": "color", "id": "edge_color", "label": "Bottom Rule Color", "default": "#ED6D1D" },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#1D1939" },
+    { "type": "color", "id": "txt_color", "label": "Text", "default": "#FEFADF" },
+    { "type": "color", "id": "accent_color", "label": "Accent (orange)", "default": "#ED6D1D" },
+    { "type": "color", "id": "ink_color", "label": "Shadow / Ink", "default": "#0F0C22" },
+    { "type": "color", "id": "field_bg_color", "label": "Field Background", "default": "#FEFADF" },
+    { "type": "color", "id": "field_txt_color", "label": "Field Text", "default": "#1D1939" }
+  ],
+  "presets": [
+    { "name": "Griza Contact" }
+  ]
+}
+{% endschema %}
