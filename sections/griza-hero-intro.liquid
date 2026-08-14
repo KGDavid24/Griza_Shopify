@@ -1,0 +1,315 @@
+{%- comment -%}
+  Section: Hero Banner (GRIZA Pixel-Perfect Typography Fix)
+  Fully customizable via Theme Editor. Online Store 2.0 compatible.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign pad_t = s.padding_top | default: 40
+  assign pad_b = s.padding_bottom | default: 40
+  assign pattern_class = 'griza-hero-' | append: section.id | append: '__pattern'
+  assign logo_class = 'griza-hero-' | append: section.id | append: '__logo'
+-%}
+
+<!-- Google Fonts betöltése kifejezetten a pontos tipográfiához -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --hero-bg: {{ s.background_color }};
+    --hero-text: {{ s.text_color }};
+    --hero-accent: {{ s.accent_color }};
+    --hero-btn-bg: {{ s.button_background_color }};
+    --hero-btn-text: {{ s.button_text_color }};
+    --hero-radius: {{ s.corner_radius }}px;
+  }
+
+  .griza-hero-{{ section.id }} {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--hero-bg);
+    color: var(--hero-text);
+    padding: {{ pad_t }}px 20px 0px;
+    border-radius: var(--hero-radius);
+  }
+
+  .griza-hero-{{ section.id }}__pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: {{ s.pattern_opacity | divided_by: 100.0 }};
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .griza-hero-{{ section.id }}__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ s.content_width }}px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-items: flex-end;
+  }
+
+  .griza-hero-{{ section.id }}__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: {{ pad_b }}px;
+    z-index: 2;
+  }
+
+  .griza-hero-{{ section.id }}__logo {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: {{ s.logo_width }}px;
+    margin: 0 0 15px;
+  }
+
+  .griza-hero-{{ section.id }}__logo-text {
+    margin: 0 0 15px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: {{ s.logo_font_size_mobile }}px;
+    line-height: 1;
+    letter-spacing: {{ s.logo_letter_spacing }}px;
+    text-transform: uppercase;
+    color: var(--hero-text);
+  }
+
+  .griza-hero-{{ section.id }}__eyebrow {
+    margin: 0 0 12px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: {{ s.eyebrow_font_size_mobile }}px;
+    line-height: 1.25;
+    letter-spacing: {{ s.eyebrow_letter_spacing }}px;
+    color: #1A103C;
+    max-width: 50ch;
+  }
+
+  .griza-hero-{{ section.id }}__title {
+    margin: 0 0 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: {{ s.title_font_size_mobile }}px;
+    line-height: {{ s.title_line_height }};
+    letter-spacing: {{ s.title_letter_spacing }}px;
+    text-transform: {{ s.title_text_transform }};
+    color: var(--hero-text);
+  }
+
+  .griza-hero-{{ section.id }}__cta {
+    display: inline-block;
+    padding: {{ s.button_padding_y }}px {{ s.button_padding_x }}px;
+    background-color: var(--hero-btn-bg);
+    color: var(--hero-btn-text);
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: {{ s.button_font_size }}px;
+    letter-spacing: {{ s.button_letter_spacing }}px;
+    text-transform: {{ s.button_text_transform }};
+    text-decoration: none;
+    line-height: 1;
+    border: 0;
+    clip-path: polygon(0% 0%, 94% 0%, 97% 10%, 94% 20%, 100% 32%, 95% 48%, 100% 62%, 94% 78%, 98% 90%, 93% 100%, 0% 100%);
+    transition: transform .18s ease, filter .18s ease;
+  }
+
+  .griza-hero-{{ section.id }}__cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+
+  .griza-hero-{{ section.id }}__media {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 1;
+  }
+
+  .griza-hero-{{ section.id }}__media img {
+    display: block;
+    width: 100%;
+    max-width: {{ s.image_max_width }}px;
+    height: auto;
+    object-fit: contain;
+    object-position: bottom;
+    transform: rotate({{ s.image_rotation }}deg) scale({{ s.image_scale | divided_by: 100.0 }});
+  }
+
+  @media screen and (min-width: 750px) {
+    .griza-hero-{{ section.id }} {
+      padding: {{ pad_t | times: 1.2 | round }}px 40px 0px;
+    }
+    .griza-hero-{{ section.id }}__inner {
+      grid-template-columns: {{ s.text_column_width }}fr {{ 100 | minus: s.text_column_width }}fr;
+      gap: 30px;
+    }
+    .griza-hero-{{ section.id }}__logo-text { font-size: {{ s.logo_font_size_desktop }}px; }
+    .griza-hero-{{ section.id }}__eyebrow { font-size: {{ s.eyebrow_font_size_desktop }}px; }
+    .griza-hero-{{ section.id }}__title { font-size: {{ s.title_font_size_desktop }}px; }
+  }
+{%- endstyle -%}
+
+<section
+  class="griza-hero-{{ section.id }}"
+  {% if s.section_aria_label != blank %}aria-label="{{ s.section_aria_label | escape }}"{% endif %}
+>
+  {%- if s.pattern_image != blank -%}
+    {%- assign pattern_alt = s.pattern_image_alt | default: '' | escape -%}
+    {{
+      s.pattern_image
+      | image_url: width: 1800
+      | image_tag:
+        loading: 'lazy',
+        fetchpriority: 'low',
+        class: pattern_class,
+        alt: pattern_alt,
+        aria-hidden: 'true'
+    }}
+  {%- endif -%}
+
+  <div class="griza-hero-{{ section.id }}__inner">
+    <div class="griza-hero-{{ section.id }}__content">
+      {%- if s.logo_image != blank -%}
+        {%- assign logo_alt_text = s.logo_alt | default: shop.name | escape -%}
+        {{
+          s.logo_image
+          | image_url: width: 600
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            class: logo_class,
+            alt: logo_alt_text
+        }}
+      {%- elsif s.logo_text != blank -%}
+        <p class="griza-hero-{{ section.id }}__logo-text">{{ s.logo_text | escape }}</p>
+      {%- endif -%}
+
+      {%- if s.eyebrow_text != blank -%}
+        <p class="griza-hero-{{ section.id }}__eyebrow">
+          {{ s.eyebrow_text | escape | newline_to_br }}
+        </p>
+      {%- endif -%}
+
+      {%- if s.title != blank -%}
+        {%- if s.use_h1 -%}
+          <h1 class="griza-hero-{{ section.id }}__title">{{ s.title | newline_to_br }}</h1>
+        {%- else -%}
+          <h2 class="griza-hero-{{ section.id }}__title">{{ s.title | newline_to_br }}</h2>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if s.button_label != blank -%}
+        <a
+          class="griza-hero-{{ section.id }}__cta"
+          href="{{ s.button_link | default: '#' }}"
+          {% if s.button_open_new_tab %}
+            target="_blank"
+            rel="noopener noreferrer"
+          {% endif %}
+        >
+          {{ s.button_label | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="griza-hero-{{ section.id }}__media">
+      {%- if s.main_image != blank -%}
+        {%- assign main_alt = s.main_image_alt | default: s.title | strip_html | escape -%}
+        {{
+          s.main_image
+          | image_url: width: 1200
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            sizes: '(min-width: 750px) 45vw, 100vw',
+            widths: '400, 600, 800, 1000, 1200',
+            alt: main_alt
+        }}
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'griza-hero-placeholder' }}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "tag": "section",
+  "class": "section-hero-banner",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "checkbox", "id": "use_h1", "label": "Use H1 for main title", "default": true },
+    { "type": "text", "id": "logo_text", "label": "Logo Text", "default": "GRIZA" },
+    { "type": "image_picker", "id": "logo_image", "label": "Logo Image" },
+    { "type": "text", "id": "logo_alt", "label": "Logo Image Alt Text" },
+    { "type": "textarea", "id": "eyebrow_text", "label": "Eyebrow Text", "default": "Bază intensă cu 50% ghimbir. Pentru un bite puternic." },
+    { "type": "textarea", "id": "title", "label": "Main Title", "default": "PENTRU BĂUTURI\nSCĂPATE DIN\nLANȚ!" },
+    { "type": "text", "id": "section_aria_label", "label": "Section ARIA Label", "default": "Hero banner" },
+
+    { "type": "header", "content": "CTA Button" },
+    { "type": "text", "id": "button_label", "label": "CTA Button Text", "default": "VREAU SĂ SIMT GHIMBIRUL!" },
+    { "type": "url", "id": "button_link", "label": "CTA Button Link" },
+    { "type": "checkbox", "id": "button_open_new_tab", "label": "Open link in new tab", "default": false },
+    { "type": "select", "id": "button_text_transform", "label": "Button Text Transform", "options": [ { "value": "none", "label": "None" }, { "value": "uppercase", "label": "Uppercase" } ], "default": "uppercase" },
+    { "type": "range", "id": "button_font_size", "min": 10, "max": 28, "step": 1, "unit": "px", "label": "Button Font Size", "default": 18 },
+    { "type": "range", "id": "button_letter_spacing", "min": 0, "max": 5, "step": 1, "unit": "px", "label": "Button Letter Spacing", "default": 1 },
+    { "type": "range", "id": "button_padding_x", "min": 8, "max": 60, "step": 2, "unit": "px", "label": "Button Horizontal Padding", "default": 28 },
+    { "type": "range", "id": "button_padding_y", "min": 6, "max": 40, "step": 1, "unit": "px", "label": "Button Vertical Padding", "default": 14 },
+
+    { "type": "header", "content": "Images" },
+    { "type": "image_picker", "id": "main_image", "label": "Main Dog & Chain Image (PNG with transparency)" },
+    { "type": "text", "id": "main_image_alt", "label": "Main Image Alt Text" },
+    { "type": "range", "id": "image_max_width", "min": 240, "max": 1200, "step": 20, "unit": "px", "label": "Main Image Max Width", "default": 680 },
+    { "type": "range", "id": "image_scale", "min": 60, "max": 160, "step": 5, "unit": "%", "label": "Main Image Scale", "default": 100 },
+    { "type": "range", "id": "image_rotation", "min": -30, "max": 30, "step": 1, "unit": "deg", "label": "Main Image Rotation", "default": 0 },
+    { "type": "image_picker", "id": "pattern_image", "label": "Background Pattern Image (Ginger background)" },
+    { "type": "text", "id": "pattern_image_alt", "label": "Background Pattern Alt Text" },
+    { "type": "range", "id": "pattern_opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Background Pattern Opacity", "default": 20 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background Color", "default": "#EE6A1E" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#F7EEE1" },
+    { "type": "color", "id": "accent_color", "label": "Accent Color", "default": "#1B2A63" },
+    { "type": "color", "id": "button_background_color", "label": "Button Background Color", "default": "#1B2A63" },
+    { "type": "color", "id": "button_text_color", "label": "Button Text Color", "default": "#F7EEE1" },
+
+    { "type": "header", "content": "Typography Settings" },
+    { "type": "range", "id": "logo_font_size_mobile", "min": 14, "max": 60, "step": 1, "unit": "px", "label": "Logo Font Size (Mobile)", "default": 28 },
+    { "type": "range", "id": "logo_font_size_desktop", "min": 14, "max": 80, "step": 1, "unit": "px", "label": "Logo Font Size (Desktop)", "default": 36 },
+    { "type": "range", "id": "logo_letter_spacing", "min": 0, "max": 5, "step": 1, "unit": "px", "label": "Logo Letter Spacing", "default": 1 },
+    { "type": "range", "id": "logo_width", "min": 60, "max": 400, "step": 10, "unit": "px", "label": "Logo Image Width", "default": 140 },
+    { "type": "range", "id": "eyebrow_font_size_mobile", "min": 12, "max": 28, "step": 1, "unit": "px", "label": "Eyebrow Font Size (Mobile)", "default": 15 },
+    { "type": "range", "id": "eyebrow_font_size_desktop", "min": 12, "max": 32, "step": 1, "unit": "px", "label": "Eyebrow Font Size (Desktop)", "default": 17 },
+    { "type": "range", "id": "eyebrow_letter_spacing", "min": 0, "max": 5, "step": 1, "unit": "px", "label": "Eyebrow Letter Spacing", "default": 0 },
+    { "type": "range", "id": "title_font_size_mobile", "min": 28, "max": 90, "step": 2, "unit": "px", "label": "Title Font Size (Mobile)", "default": 48 },
+    { "type": "range", "id": "title_font_size_desktop", "min": 40, "max": 160, "step": 2, "unit": "px", "label": "Title Font Size (Desktop)", "default": 86 },
+    { "type": "range", "id": "title_line_height", "min": 0.8, "max": 2.0, "step": 0.1, "label": "Title Line Height", "default": 0.8 },
+    { "type": "range", "id": "title_letter_spacing", "min": 0, "max": 5, "step": 1, "unit": "px", "label": "Title Letter Spacing", "default": 0 },
+    { "type": "select", "id": "title_text_transform", "label": "Title Text Transform", "options": [ { "value": "none", "label": "None" }, { "value": "uppercase", "label": "Uppercase" } ], "default": "uppercase" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "content_width", "min": 900, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1280 },
+    { "type": "range", "id": "text_column_width", "min": 30, "max": 70, "step": 1, "unit": "%", "label": "Text Column Width (Desktop)", "default": 55 },
+    { "type": "range", "id": "corner_radius", "min": 0, "max": 60, "step": 2, "unit": "px", "label": "Section Corner Radius", "default": 0 },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 140, "step": 4, "unit": "px", "label": "Padding Top", "default": 40 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 140, "step": 4, "unit": "px", "label": "Padding Bottom", "default": 40 }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}

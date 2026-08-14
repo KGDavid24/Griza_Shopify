@@ -1,0 +1,274 @@
+{%- comment -%}
+  Section: Griza Story Section (Meet Ginger Head)
+  Online Store 2.0 compatible. SEO & Responsive Optimized.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if section.settings.custom_font_filename != blank %}
+    {%- assign font_ext = section.settings.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ section.settings.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  /* Full-bleed kitörés a Savor témakonténerből */
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    
+    --story-bg: {{ s.bg_color }};
+    --story-title-color: {{ s.title_color }};
+    --story-body-color: {{ s.body_color }};
+    --story-heading-font: {% if section.settings.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+  }
+
+  /* Mobil elrendezés (Alapértelmezett) */
+  .griza-story-{{ section.id }} {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    background-color: var(--story-bg);
+    color: var(--story-body-color);
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* MOBIL HÁTTÉR MINTA */
+  .griza-story-{{ section.id }}::before {
+    content: "";
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    {% assign mob_bg = s.pattern_img_m | default: s.pattern_img %}
+    {% if mob_bg != blank %}
+    background-image: url('{{ mob_bg | image_url: width: 1400 }}') !important;
+    background-size: cover !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    opacity: {{ s.pattern_opac | divided_by: 100.0 }} !important;
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .griza-story-{{ section.id }}__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    align-items: center;
+  }
+
+  /* Bal oldali dupla képes konténer (Háttér kártya + Kutyafej egymásra rétegezve) */
+  .griza-story-{{ section.id }}__media {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .griza-story-{{ section.id }}__card-bg {
+    width: 100%;
+    max-width: {{ s.head_img_max_w }}px;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  .griza-story-{{ section.id }}__head-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: {{ s.head_overlay_size }}%;
+    height: auto;
+    display: block;
+    z-index: 2;
+    margin-left: {{ s.head_offset_x }}px;
+    margin-top: {{ s.head_offset_y }}px;
+  }
+
+  /* Jobb oldali szöveges tartalom */
+  .griza-story-{{ section.id }}__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 2;
+  }
+
+  .griza-story-{{ section.id }}__title {
+    font-family: var(--story-heading-font) !important;
+    font-size: {{ s.title_fs_m }}px !important;
+    line-height: {{ s.title_lh }} !important;
+    color: var(--story-title-color) !important;
+    margin: 0 0 20px;
+    text-transform: uppercase;
+    word-break: break-word;
+  }
+
+  .griza-story-{{ section.id }}__body {
+    font-family: 'Barlow', sans-serif !important;
+    font-size: {{ s.body_fs }}px !important;
+    line-height: 1.5 !important;
+    color: var(--story-body-color) !important;
+  }
+
+  .griza-story-{{ section.id }}__body p {
+    margin: 0 0 16px;
+  }
+  .griza-story-{{ section.id }}__body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ASZTALI NÉZET (min-width: 750px) */
+  @media screen and (min-width: 750px) {
+    .griza-story-{{ section.id }} {
+      padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px !important;
+    }
+
+    .griza-story-{{ section.id }}::before {
+      {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 2400 }}') !important;
+      {% endif %}
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    .griza-story-{{ section.id }}__inner {
+      grid-template-columns: {{ s.col_w }}fr {{ 100 | minus: s.col_w }}fr;
+      gap: 50px;
+    }
+
+    .griza-story-{{ section.id }}__title {
+      font-size: {{ s.title_fs_d }}px !important;
+    }
+  }
+{%- endstyle -%}
+
+<section class="griza-story-{{ section.id }}">
+  <div class="griza-story-{{ section.id }}__inner">
+    
+    <div class="griza-story-{{ section.id }}__media">
+      {%- if s.card_bg_img != blank -%}
+        {%- assign card_alt = s.card_bg_img.alt | default: s.title_txt | strip_html | escape -%}
+        {{
+          s.card_bg_img
+          | image_url: width: 1000
+          | image_tag: loading: 'lazy', class: 'griza-story-section__card-bg', alt: card_alt
+        }}
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'griza-story-section__card-bg' }}
+      {%- endif -%}
+
+      {%- if s.head_img != blank -%}
+        {%- assign head_alt = s.head_img.alt | default: 'Ginger Head' | escape -%}
+        <img 
+          src="{{ s.head_img | image_url: width: 800 }}" 
+          alt="{{ head_alt }}" 
+          class="griza-story-{{ section.id }}__head-img"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </div>
+
+    <div class="griza-story-{{ section.id }}__content">
+      {%- if s.title_txt != blank -%}
+        <h2 class="griza-story-{{ section.id }}__title">{{ s.title_txt | newline_to_br }}</h2>
+      {%- endif -%}
+
+      {%- if s.body_rich != blank -%}
+        <div class="griza-story-{{ section.id }}__body">
+          {{ s.body_rich }}
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Story Section",
+  "tag": "section",
+  "class": "section-griza-story",
+  "settings": [
+    { "type": "header", "content": "Custom Font Setup" },
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "default": "bebasneuepro-bold.otf" },
+    
+    { "type": "header", "content": "Text Content" },
+    { "type": "textarea", "id": "title_txt", "label": "Section Title (H2)", "default": "MEET GINGER HEAD!" },
+    { "type": "richtext", "id": "body_rich", "label": "Story Text", "default": "<p>Ginger Head are numele de Griza în carnetul de sănătate. Era un cățel normal până când stăpânul său a scăpat un rizom de ghimbir pe jos.</p><p>După ce câinele a luat o mușcătură, s-a retras pentru o secundă, dar după ce a simțit aftertaste-ul, a încercat cu lăcomie să înghiță tot ce a rămas. Ghimbirul a fost prea mare pentru el și i-a deformat permanent capul în forma pe care o îndrăgim și a devenit mascota noastră iubită.</p><p>Griza este pentru cei care, la fel ca Ginger Head, apreciază un gust de ghimbir aprig și natural. Cei pentru care înțeapă, da-i bun.</p>" },
+
+    { "type": "header", "content": "Images & Overlay Setup" },
+    { "type": "image_picker", "id": "card_bg_img", "label": "1. Card Background Image (Ilustrația portocalie din spate)" },
+    { "type": "image_picker", "id": "head_img", "label": "2. Dog Head Image (Capul kutyának, ami rákerül)" },
+    { "type": "range", "id": "head_overlay_size", "min": 30, "max": 120, "step": 2, "unit": "%", "label": "Dog Head Relative Size", "default": 86 },
+    { "type": "range", "id": "head_offset_x", "min": -100, "max": 100, "step": 2, "unit": "px", "label": "Dog Head Horizontal Offset (X)", "default": 0 },
+    { "type": "range", "id": "head_offset_y", "min": -100, "max": 100, "step": 2, "unit": "px", "label": "Dog Head Vertical Offset (Y)", "default": 0 },
+
+    { "type": "header", "content": "Background Patterns" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Background Pattern - Desktop (PATTERN GINGER.svg)" },
+    { "type": "image_picker", "id": "pattern_img_m", "label": "Mobile Background Pattern (Vertical SVG / PNG)" },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Pattern Opacity", "default": 100 },
+
+    { "type": "header", "content": "Layout Spacing (Desktop)" },
+    { "type": "range", "id": "head_img_max_w", "min": 200, "max": 800, "step": 10, "unit": "px", "label": "Image Card Max Width", "default": 520 },
+    { "type": "range", "id": "content_w", "min": 900, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1360 },
+    { "type": "range", "id": "col_w", "min": 30, "max": 70, "step": 1, "unit": "%", "label": "Left Column Width Ratio", "default": 45 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 300, "step": 4, "unit": "px", "label": "Padding Top", "default": 100 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 300, "step": 4, "unit": "px", "label": "Padding Bottom", "default": 100 },
+
+    { "type": "header", "content": "Layout Spacing (Mobile)" },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Top - Mobile", "default": 40 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom - Mobile", "default": 40 },
+
+    { "type": "header", "content": "Typography & Sizes" },
+    { "type": "range", "id": "title_fs_m", "min": 24, "max": 80, "step": 2, "unit": "px", "label": "Title Size (Mobile)", "default": 42 },
+    { "type": "range", "id": "title_fs_d", "min": 30, "max": 120, "step": 2, "unit": "px", "label": "Title Size (Desktop)", "default": 72 },
+    { "type": "range", "id": "title_lh", "min": 0.7, "max": 1.5, "step": 0.1, "label": "Title Line Height", "default": 0.9 },
+    { "type": "range", "id": "body_fs", "min": 14, "max": 24, "step": 1, "unit": "px", "label": "Body Text Font Size", "default": 18 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Section Background", "default": "#EFB230" },
+    { "type": "color", "id": "title_color", "label": "Title Color (Navy)", "default": "#1D1939" },
+    { "type": "color", "id": "body_color", "label": "Body Text Color (Dark Purple)", "default": "#1D1939" }
+  ],
+  "presets": [
+    {
+      "name": "Griza Story Section"
+    }
+  ]
+}
+{% endschema %}

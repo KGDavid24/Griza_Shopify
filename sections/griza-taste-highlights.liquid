@@ -1,0 +1,384 @@
+{%- comment -%}
+  Section: Griza Taste Highlights (Expanded Mobile Typography Range)
+  Online Store 2.0 compatible. SEO & Responsive Optimized.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if section.settings.custom_font_filename != blank %}
+    {%- assign font_ext = section.settings.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ section.settings.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    
+    --taste-bg: {{ s.bg_color }};
+    --taste-heading-font: {% if section.settings.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+  }
+
+  .griza-taste-{{ section.id }} {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    background-color: var(--taste-bg);
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px !important;
+    box-sizing: border-box !important;
+    z-index: 2;
+  }
+
+  .griza-taste-{{ section.id }}::before {
+    content: "";
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    {% assign mob_bg = s.pattern_img_m | default: s.pattern_img %}
+    {% if mob_bg != blank %}
+    background-image: url('{{ mob_bg | image_url: width: 1400 }}') !important;
+    background-size: cover !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    opacity: {{ s.pattern_opac | divided_by: 100.0 }} !important;
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* --- MOBIL ELRENDEZÉS (FLEX COLUMN) --- */
+  .griza-taste-{{ section.id }}__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* 1. Cím mobilon (Legfelül) */
+  .griza-taste-{{ section.id }}__title {
+    order: 1;
+    font-family: var(--taste-heading-font) !important;
+    font-size: {{ s.title_fs_m }}px !important;
+    line-height: {{ s.title_lh }} !important;
+    color: {{ s.title_color }} !important;
+    margin-top: {{ s.title_top_margin_m }}px !important;
+    margin-bottom: 10px !important;
+    text-transform: uppercase;
+    word-break: break-word;
+    text-align: center;
+    width: 100%;
+    z-index: 10;
+  }
+
+  /* 2. Üveg kompozíció mobilon (Középen) */
+  .griza-taste-{{ section.id }}__media {
+    order: 2;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    max-width: {{ s.comp_img_max_w }}px;
+    margin: {{ s.bottle_overflow_top_m }}px auto 0 !important;
+    z-index: 2;
+  }
+
+  .griza-taste-{{ section.id }}__comp-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%; /* Mobilon középre */
+    transform: translate(-50%, -50%);
+    width: {{ s.comp_bg_size }}% !important;
+    max-width: none !important;
+    height: auto;
+    display: block;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .griza-taste-{{ section.id }}__composition-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* 3. Jelvények mobilon (Alul) */
+  .griza-taste-{{ section.id }}__badges {
+    order: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: {{ s.badges_top_offset_m }}px !important;
+    z-index: 10;
+  }
+
+  .griza-taste-{{ section.id }}__badge-img {
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .griza-taste-{{ section.id }}__badge-50 {
+    width: {{ s.badge_50_w_m }}px !important;
+    max-width: 100% !important;
+    position: relative;
+    z-index: 1;
+  }
+
+  .griza-taste-{{ section.id }}__badge-ratio {
+    width: {{ s.badge_ratio_w_m }}px !important;
+    max-width: 100% !important;
+    position: relative;
+    z-index: 2;
+    margin-top: {{ s.ratio_offset_y_m }}px !important;
+    margin-left: {{ s.ratio_offset_x_m }}px !important;
+  }
+
+  .griza-taste-{{ section.id }}__badge-tags {
+    width: {{ s.badge_tags_w_m }}px !important;
+    max-width: 100% !important;
+    margin-top: {{ s.tags_offset_y_m }}px !important;
+  }
+
+
+  /* --- ASZTALI NÉZET (CSS GRID) --- */
+  @media screen and (min-width: 750px) {
+    .griza-taste-{{ section.id }} {
+      padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px !important;
+    }
+
+    .griza-taste-{{ section.id }}::before {
+      {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 2400 }}') !important;
+      {% endif %}
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    .griza-taste-{{ section.id }}__inner {
+      display: grid !important;
+      grid-template-columns: {{ s.col_w }}fr {{ 100 | minus: s.col_w }}fr !important;
+      grid-template-rows: auto 1fr !important;
+      gap: 10px !important;
+      align-items: start !important;
+    }
+
+    /* Asztalon a cím bal felül */
+    .griza-taste-{{ section.id }}__title {
+      grid-column: 1;
+      grid-row: 1;
+      font-size: {{ s.title_fs_d }}px !important;
+      text-align: left;
+      margin-top: {{ s.title_top_margin }}px !important;
+      margin-bottom: 20px !important;
+    }
+
+    /* Asztalon a jelvények a cím alatt bal oldalt */
+    .griza-taste-{{ section.id }}__badges {
+      grid-column: 1;
+      grid-row: 2;
+      align-items: flex-start;
+      margin-top: 0 !important;
+    }
+
+    .griza-taste-{{ section.id }}__badge-50 {
+      width: {{ s.badge_50_w }}px !important;
+    }
+
+    .griza-taste-{{ section.id }}__badge-ratio {
+      width: {{ s.badge_ratio_w }}px !important;
+      margin-top: {{ s.ratio_offset_y }}px !important;
+      margin-left: {{ s.ratio_offset_x }}px !important;
+    }
+
+    .griza-taste-{{ section.id }}__badge-tags {
+      width: {{ s.badge_tags_w }}px !important;
+      margin-top: 15px !important;
+    }
+
+    /* Asztalon az üveg a jobb oldali oszlopban, átfogja mindkét sort */
+    .griza-taste-{{ section.id }}__media {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      order: unset;
+      margin-top: {{ s.bottle_overflow_top }}px !important;
+      margin-bottom: 0 !important;
+      margin-right: -40px !important;
+      margin-left: auto !important;
+    }
+
+    .griza-taste-{{ section.id }}__comp-bg {
+      left: 55%;
+    }
+  }
+{%- endstyle -%}
+
+<section class="griza-taste-{{ section.id }}">
+  <div class="griza-taste-{{ section.id }}__inner">
+    
+    {%- if s.title_txt != blank -%}
+      <h2 class="griza-taste-{{ section.id }}__title" style="color: {{ s.title_color }} !important;">{{ s.title_txt | newline_to_br }}</h2>
+    {%- endif -%}
+
+    <div class="griza-taste-{{ section.id }}__badges">
+      {%- if s.badge_50_img != blank -%}
+        {%- assign b50_alt = s.badge_50_img.alt | default: '50% Ghimbir' | escape -%}
+        <img 
+          src="{{ s.badge_50_img | image_url: width: 600 }}" 
+          alt="{{ b50_alt }}" 
+          class="griza-taste-{{ section.id }}__badge-img griza-taste-{{ section.id }}__badge-50"
+          loading="lazy"
+        >
+      {%- endif -%}
+
+      {%- if s.badge_ratio_img != blank -%}
+        {%- assign b_ratio_alt = s.badge_ratio_img.alt | default: 'Rata de dilutie 1:10' | escape -%}
+        <img 
+          src="{{ s.badge_ratio_img | image_url: width: 600 }}" 
+          alt="{{ b_ratio_alt }}" 
+          class="griza-taste-{{ section.id }}__badge-img griza-taste-{{ section.id }}__badge-ratio"
+          loading="lazy"
+        >
+      {%- endif -%}
+
+      {%- if s.badge_tags_img != blank -%}
+        {%- assign b_tags_alt = s.badge_tags_img.alt | default: 'Non-GMO Selectat Manual' | escape -%}
+        <img 
+          src="{{ s.badge_tags_img | image_url: width: 600 }}" 
+          alt="{{ b_tags_alt }}" 
+          class="griza-taste-{{ section.id }}__badge-img griza-taste-{{ section.id }}__badge-tags"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </div>
+
+    <div class="griza-taste-{{ section.id }}__media">
+      {%- if s.comp_bg_img != blank -%}
+        {%- assign bg_alt = s.comp_bg_img.alt | default: '' | escape -%}
+        <img 
+          src="{{ s.comp_bg_img | image_url: width: 1200 }}" 
+          alt="{{ bg_alt }}" 
+          class="griza-taste-{{ section.id }}__comp-bg"
+          loading="lazy"
+        >
+      {%- endif -%}
+
+      {%- if s.main_comp_img != blank -%}
+        {%- assign comp_alt = s.main_comp_img.alt | default: s.title_txt | strip_html | escape -%}
+        {%- assign comp_class = 'griza-taste-' | append: section.id | append: '__composition-img' -%}
+        {{
+          s.main_comp_img
+          | image_url: width: 1200
+          | image_tag: loading: 'lazy', class: comp_class, alt: comp_alt
+        }}
+      {%- else -%}
+        {%- assign comp_class = 'griza-taste-' | append: section.id | append: '__composition-img' -%}
+        {{ 'image' | placeholder_svg_tag: comp_class }}
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Taste Highlights",
+  "tag": "section",
+  "class": "section-griza-taste",
+  "settings": [
+    { "type": "header", "content": "Custom Font Setup" },
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "default": "bebasneuepro-bold.otf" },
+    
+    { "type": "header", "content": "Text Content" },
+    { "type": "textarea", "id": "title_txt", "label": "Section Title (H2)", "default": "GUST INTENS\nȘI ÎNȚEPĂTOR." },
+
+    { "type": "header", "content": "Badges & Label Assets (Desktop)" },
+    { "type": "image_picker", "id": "badge_50_img", "label": "1. '50% GHIMBIR' Badge SVG/PNG" },
+    { "type": "range", "id": "badge_50_w", "min": 100, "max": 600, "step": 10, "unit": "px", "label": "50% Badge Width (Desktop)", "default": 280 },
+    { "type": "image_picker", "id": "badge_ratio_img", "label": "2. 'RATĂ DE DILUȚIE 1:10' Badge SVG/PNG" },
+    { "type": "range", "id": "badge_ratio_w", "min": 100, "max": 600, "step": 10, "unit": "px", "label": "1:10 Ratio Badge Width (Desktop)", "default": 250 },
+    { "type": "range", "id": "ratio_offset_y", "min": -200, "max": 50, "step": 5, "unit": "px", "label": "Ratio Badge Top Shift (Y)", "default": -110 },
+    { "type": "range", "id": "ratio_offset_x", "min": 0, "max": 400, "step": 5, "unit": "px", "label": "Ratio Badge Left Shift (X)", "default": 130 },
+    { "type": "image_picker", "id": "badge_tags_img", "label": "3. 'NON-GMO / SELECTAT MANUAL' Badge SVG/PNG" },
+    { "type": "range", "id": "badge_tags_w", "min": 100, "max": 800, "step": 10, "unit": "px", "label": "Tags Badge Width (Desktop)", "default": 360 },
+
+    { "type": "header", "content": "Mobile Badges & Offsets" },
+    { "type": "range", "id": "badges_top_offset_m", "min": -150, "max": 50, "step": 5, "unit": "px", "label": "All Badges Top Shift (Mobile)", "default": -30 },
+    { "type": "range", "id": "badge_50_w_m", "min": 100, "max": 400, "step": 5, "unit": "px", "label": "50% Badge Width (Mobile)", "default": 240 },
+    { "type": "range", "id": "badge_ratio_w_m", "min": 100, "max": 400, "step": 5, "unit": "px", "label": "1:10 Ratio Badge Width (Mobile)", "default": 220 },
+    { "type": "range", "id": "ratio_offset_y_m", "min": -100, "max": 50, "step": 2, "unit": "px", "label": "1:10 Badge Top Shift (Mobile)", "default": -40 },
+    { "type": "range", "id": "ratio_offset_x_m", "min": -100, "max": 200, "step": 5, "unit": "px", "label": "1:10 Badge Left Shift (Mobile)", "default": 40 },
+    { "type": "range", "id": "badge_tags_w_m", "min": 100, "max": 400, "step": 5, "unit": "px", "label": "Tags Badge Width (Mobile)", "default": 280 },
+    { "type": "range", "id": "tags_offset_y_m", "min": -50, "max": 50, "step": 2, "unit": "px", "label": "Tags Badge Top Shift (Mobile)", "default": 10 },
+
+    { "type": "header", "content": "Main Product Composition & Background" },
+    { "type": "image_picker", "id": "comp_bg_img", "label": "Composition Background Pattern (Gyömbéres illusztráció az üveg mögé)" },
+    { "type": "range", "id": "comp_bg_size", "min": 50, "max": 300, "step": 10, "unit": "%", "label": "Composition Pattern Relative Size", "default": 140 },
+    { "type": "image_picker", "id": "main_comp_img", "label": "Bottle & Glass Composition Image (Üveg + Pohár kompozíció)" },
+    { "type": "range", "id": "comp_img_max_w", "min": 200, "max": 800, "step": 10, "unit": "px", "label": "Composition Max Width", "default": 380 },
+    { "type": "range", "id": "bottle_overflow_top", "min": -450, "max": 50, "step": 10, "unit": "px", "label": "Bottle Overflow Top Offset (Desktop)", "default": -260 },
+    { "type": "range", "id": "bottle_overflow_top_m", "min": -100, "max": 200, "step": 5, "unit": "px", "label": "Bottle Overflow Top Offset (Mobile)", "default": 20 },
+
+    { "type": "header", "content": "Section Background Patterns" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Background Pattern - Desktop (PATTERN CREAM/YELLOW)" },
+    { "type": "image_picker", "id": "pattern_img_m", "label": "Mobile Background Pattern (Vertical SVG / PNG)" },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Pattern Opacity", "default": 100 },
+
+    { "type": "header", "content": "Layout Spacing (Desktop)" },
+    { "type": "range", "id": "content_w", "min": 700, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1040 },
+    { "type": "range", "id": "col_w", "min": 30, "max": 70, "step": 1, "unit": "%", "label": "Left Column Width Ratio", "default": 55 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 300, "step": 4, "unit": "px", "label": "Padding Top", "default": 0 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 300, "step": 4, "unit": "px", "label": "Padding Bottom", "default": 32 },
+
+    { "type": "header", "content": "Layout Spacing (Mobile)" },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Top - Mobile", "default": 0 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom - Mobile", "default": 20 },
+
+    { "type": "header", "content": "Typography & Sizes" },
+    { "type": "color", "id": "title_color", "label": "Title Color (Navy)", "default": "#1D1939" },
+    { "type": "range", "id": "title_top_margin", "min": 0, "max": 300, "step": 5, "unit": "px", "label": "Title Top Shift Down (Desktop)", "default": 80 },
+    { "type": "range", "id": "title_top_margin_m", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Title Top Shift Down (Mobile)", "default": 10 },
+    { "type": "range", "id": "title_fs_m", "min": 24, "max": 160, "step": 2, "unit": "px", "label": "Title Size (Mobile)", "default": 80 },
+    { "type": "range", "id": "title_fs_d", "min": 30, "max": 200, "step": 2, "unit": "px", "label": "Title Size (Desktop)", "default": 102 },
+    { "type": "range", "id": "title_lh", "min": 0.7, "max": 1.5, "step": 0.1, "label": "Title Line Height", "default": 0.8 }
+  ],
+  "presets": [
+    {
+      "name": "Griza Taste Highlights"
+    }
+  ]
+}
+{% endschema %}

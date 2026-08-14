@@ -1,0 +1,477 @@
+{%- comment -%}
+  Section: Griza Hero Banner (Desktop transform fix)
+  Online Store 2.0 compatible. SEO Optimized.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if section.settings.custom_font_filename != blank %}
+    {%- assign font_ext = section.settings.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ section.settings.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }},
+  .section-griza-hero {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    position: relative !important;
+  }
+
+  /* A főszenkció kapja meg a beállítható túllógást/szélesítést */
+  .griza-hero-{{ section.id }} {
+    position: relative !important;
+    width: {{ s.bg_width_m }}% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background-color: {{ s.bg_color }} !important;
+    color: {{ s.txt_color }};
+    padding-top: {{ s.pad_top_m }}px !important;
+    padding-bottom: {{ s.pad_bottom_m }}px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    margin-top: -{{ s.bg_expand_y_m }}px !important;
+    margin-bottom: -{{ s.bg_expand_y_m }}px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    --hero-heading-font: {% if section.settings.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+  }
+
+  /* HÁTTÉR MINTÁZAT - A TELJES SZEKCIÓ MÖGÉ KERÜL */
+  .griza-hero-{{ section.id }}::before {
+    content: "";
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    {% assign mob_bg = s.pattern_img_m | default: s.pattern_img %}
+    {% if mob_bg != blank %}
+    background-image: url('{{ mob_bg | image_url: width: 1400 }}') !important;
+    background-size: cover !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    opacity: {{ s.pattern_opac | divided_by: 100.0 }} !important;
+    {% endif %}
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* BELSŐ KONTÉNER - CSAK A TARTALMAT KORLÁTOZZA KÖZÉPRE */
+  .griza-hero-{{ section.id }}__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0px; 
+    align-items: flex-end;
+    box-sizing: border-box;
+  }
+
+  /* TARTALOM IGAZÍTÁSA (BALRA ZÁRVA) */
+  .griza-hero-{{ section.id }}__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start !important;
+    text-align: left !important;
+    padding-bottom: {{ s.text_pad_bot_m }}px;
+    z-index: 2;
+    width: 100%;
+  }
+
+  /* KÜLÖNÁLLÓ MOBIL ÉS ASZTALI CÍMSOROK */
+  .griza-hide-mobile { display: none !important; }
+  .griza-hide-desktop { display: block !important; }
+
+  /* LOGÓ FIX POZÍCIÓS CSOMAGOLÓJA */
+  .griza-hero-{{ section.id }}__logo-wrap {
+    margin-top: 0 !important;
+    margin-bottom: 15px !important;
+    display: flex;
+    justify-content: flex-start !important;
+    width: 100%;
+  }
+
+  .griza-hero-{{ section.id }}__logo-img {
+    width: {{ s.logo_w }}px !important;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    margin-top: {{ s.logo_offset_y_m }}px !important;
+    margin-left: {{ s.logo_offset_x }}px !important;
+  }
+
+  .griza-hero-{{ section.id }}__logo-text {
+    font-family: var(--hero-heading-font) !important;
+    font-size: {{ s.logo_fs }}px !important;
+    color: {{ s.txt_color }} !important;
+    margin: 0 0 15px;
+    margin-top: {{ s.logo_offset_y_m }}px !important;
+    margin-left: {{ s.logo_offset_x }}px !important;
+    line-height: 1;
+    text-transform: uppercase;
+    text-align: left !important;
+  }
+
+  .griza-hero-{{ section.id }}__eyebrow {
+    font-family: 'Barlow', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: {{ s.eyebrow_fs }}px !important;
+    color: {{ s.sub_color }} !important;
+    margin: 0 0 15px;
+    line-height: 1.3;
+    max-width: 60ch;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .griza-hero-{{ section.id }}__title {
+    font-family: var(--hero-heading-font) !important;
+    font-size: {{ s.title_fs_m }}px !important;
+    line-height: {{ s.title_lh }} !important;
+    color: {{ s.txt_color }} !important;
+    margin: 0 0 25px;
+    text-transform: uppercase;
+    word-break: break-word;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  /* GOMB STÍLUSOK ÉS SZÉTVÁLASZTÁS KÉSZÜLÉKTÍPUS SZERINT */
+  a.griza-hero-{{ section.id }}__cta,
+  a.griza-hero-{{ section.id }}__cta:visited,
+  a.griza-hero-{{ section.id }}__cta:active {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ s.btn_pad_y }}px {{ s.btn_pad_x }}px !important;
+    background-color: {% if s.btn_bg_img == blank %}{{ s.btn_bg_color }}{% else %}transparent{% endif %} !important;
+    background-image: {% if s.btn_bg_img != blank %}url('{{ s.btn_bg_img | image_url: width: 800 }}'){% else %}none{% endif %} !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    color: {{ s.btn_txt_color }} !important;
+    font-family: var(--hero-heading-font) !important;
+    font-size: {{ s.btn_fs }}px !important;
+    text-decoration: none !important;
+    line-height: 1 !important;
+    min-width: 200px;
+    {% if s.btn_bg_img == blank %}
+    clip-path: polygon(0% 0%, 94% 0%, 97% 10%, 94% 20%, 100% 32%, 95% 48%, 100% 62%, 94% 78%, 98% 90%, 93% 100%, 0% 100%);
+    {% endif %}
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  a.griza-hero-{{ section.id }}__cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+
+  .griza-hero-{{ section.id }}__cta-desktop {
+    display: none !important;
+  }
+
+  /* MOBIL GOMB KÖZÉPRE IGAZÍTÁSA */
+  .griza-hero-{{ section.id }}__cta-mobile {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 15px !important;
+    z-index: 5 !important;
+    position: relative !important;
+  }
+
+  .griza-hero-{{ section.id }}__media {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    align-self: flex-end;
+    z-index: 1;
+    margin-top: -{{ s.dog_offset_y_m | default: 0 }}px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .griza-hero-{{ section.id }}__dog-img {
+    width: 100%;
+    max-width: {{ s.img_max_w }}px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    object-position: bottom;
+    position: relative;
+    z-index: 2;
+  }
+
+  .griza-hero-{{ section.id }}__chain-img {
+    position: absolute;
+    top: {{ s.chain_top_m }}%;
+    right: {{ s.chain_right_m }}%;
+    width: {{ s.chain_w_m }}%;
+    max-width: none !important;
+    height: auto;
+    z-index: 1;
+    pointer-events: none;
+    transform: rotate({{ s.chain_rotate_m }}deg);
+  }
+
+  /* ASZTALI NÉZET (min-width: 750px) */
+  @media screen and (min-width: 750px) {
+    .griza-hide-mobile { display: block !important; }
+    .griza-hide-desktop { display: none !important; }
+
+    .griza-hero-{{ section.id }} {
+      width: {{ s.bg_width_d }}% !important;
+      margin-top: -{{ s.bg_expand_y_d }}px !important;
+      margin-bottom: -{{ s.bg_expand_y_d }}px !important;
+      padding-top: {{ s.pad_top }}px !important;
+      padding-bottom: {{ s.pad_bottom }}px !important;
+      padding-left: 40px !important;
+      padding-right: 40px !important;
+    }
+    .griza-hero-{{ section.id }}::before {
+      {% if s.pattern_img != blank %}
+      background-image: url('{{ s.pattern_img | image_url: width: 2400 }}') !important;
+      {% endif %}
+      background-size: cover !important;
+      background-position: top center !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    .griza-hero-{{ section.id }}__content {
+      padding-bottom: {{ s.text_pad_bot }}px;
+    }
+
+    .griza-hero-{{ section.id }}__media {
+      margin-top: 0 !important; /* Mobil margó törlése asztalon */
+      margin-bottom: 0 !important;
+      transform: translateY(calc({{ s.dog_offset_y | default: 0 }}px * -1)) !important; /* Asztalon a transform végzi a mozgatást */
+    }
+    
+    .griza-hero-{{ section.id }}__inner {
+      grid-template-columns: {{ s.col_w }}fr {{ 100 | minus: s.col_w }}fr;
+      gap: 40px; 
+    }
+    .griza-hero-{{ section.id }}__title {
+      font-size: {{ s.title_fs_d }}px !important;
+    }
+    .griza-hero-{{ section.id }}__chain-img {
+      top: {{ s.chain_top_d }}%;
+      right: {{ s.chain_right_d }}%;
+      width: 90%;
+      transform: rotate(0deg); 
+    }
+    .griza-hero-{{ section.id }}__logo-img,
+    .griza-hero-{{ section.id }}__logo-text {
+      margin-top: {{ s.logo_offset_y }}px !important;
+    }
+    
+    .griza-hero-{{ section.id }}__cta-desktop {
+      display: inline-flex !important;
+    }
+    .griza-hero-{{ section.id }}__cta-mobile {
+      display: none !important;
+    }
+  }
+{%- endstyle -%}
+
+<section class="griza-hero-{{ section.id }}">
+  <div class="griza-hero-{{ section.id }}__inner">
+    
+    <!-- TARTALOM OSZLOP -->
+    <div class="griza-hero-{{ section.id }}__content">
+      {%- if s.logo_img != blank -%}
+        <div class="griza-hero-{{ section.id }}__logo-wrap">
+          {%- assign logo_alt = s.logo_img.alt | default: shop.name | escape -%}
+          <img 
+            src="{{ s.logo_img | image_url: width: 800 }}" 
+            alt="{{ logo_alt }}" 
+            class="griza-hero-{{ section.id }}__logo-img"
+            width="{{ s.logo_w }}"
+            height="auto"
+            loading="eager"
+          >
+        </div>
+      {%- elsif s.logo_txt != blank -%}
+        <p class="griza-hero-{{ section.id }}__logo-text">{{ s.logo_txt | escape }}</p>
+      {%- endif -%}
+
+      {%- if s.eyebrow_txt != blank -%}
+        <p class="griza-hero-{{ section.id }}__eyebrow">
+          {{ s.eyebrow_txt | escape | newline_to_br }}
+        </p>
+      {%- endif -%}
+
+      {%- if s.title_txt != blank or s.title_txt_m != blank -%}
+        {%- assign desk_title = s.title_txt | default: s.title_txt_m -%}
+        {%- assign mob_title = s.title_txt_m | default: s.title_txt -%}
+        
+        {%- if s.use_h1 -%}
+          <h1 class="griza-hero-{{ section.id }}__title">
+            <span class="griza-hide-mobile">{{ desk_title | newline_to_br }}</span>
+            <span class="griza-hide-desktop" aria-hidden="true">{{ mob_title | newline_to_br }}</span>
+          </h1>
+        {%- else -%}
+          <h2 class="griza-hero-{{ section.id }}__title">
+            <span class="griza-hide-mobile">{{ desk_title | newline_to_br }}</span>
+            <span class="griza-hide-desktop" aria-hidden="true">{{ mob_title | newline_to_br }}</span>
+          </h2>
+        {%- endif -%}
+      {%- endif -%}
+
+      <!-- ASZTALI GOMB (Szöveg alatt marad) -->
+      {%- if s.btn_lbl != blank -%}
+        <div class="griza-hero-{{ section.id }}__cta-desktop">
+          <a class="griza-hero-{{ section.id }}__cta" href="{{ s.btn_lnk | default: '#' }}">
+            {{ s.btn_lbl | escape }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- KÉPEK OSZLOP -->
+    <div class="griza-hero-{{ section.id }}__media">
+      {%- if s.chain_img != blank -%}
+        {%- assign chain_class = 'griza-hero-' | append: section.id | append: '__chain-img' -%}
+        {{
+          s.chain_img
+          | image_url: width: 800
+          | image_tag: loading: 'lazy', class: chain_class, alt: ''
+        }}
+      {%- endif -%}
+
+      {%- if s.main_img != blank -%}
+        {%- assign dog_class = 'griza-hero-' | append: section.id | append: '__dog-img' -%}
+        {%- assign main_alt = s.main_img.alt | default: s.title_txt | strip_html | escape -%}
+        {{
+          s.main_img
+          | image_url: width: 1400
+          | image_tag: loading: 'eager', class: dog_class, alt: main_alt
+        }}
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag }}
+      {%- endif -%}
+    </div>
+
+    <!-- MOBIL GOMB (Középen, a kutya alatt) -->
+    {%- if s.btn_lbl != blank -%}
+      <div class="griza-hero-{{ section.id }}__cta-mobile">
+        <a class="griza-hero-{{ section.id }}__cta" href="{{ s.btn_lnk | default: '#' }}">
+          {{ s.btn_lbl | escape }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Hero Banner",
+  "tag": "section",
+  "class": "section-griza-hero",
+  "settings": [
+    { "type": "header", "content": "Background Canvas Sizing (MANUAL EXPAND)" },
+    { "type": "range", "id": "bg_width_d", "min": 100, "max": 200, "step": 1, "unit": "%", "label": "Background Width (Desktop)", "default": 120, "info": "Increase over 100% to push background beyond container boundaries." },
+    { "type": "range", "id": "bg_expand_y_d", "min": 0, "max": 200, "step": 2, "unit": "px", "label": "Background Height Expand (Desktop)", "default": 0, "info": "Expands background vertically over adjacent sections." },
+    { "type": "range", "id": "bg_width_m", "min": 100, "max": 200, "step": 1, "unit": "%", "label": "Background Width (Mobile)", "default": 120 },
+    { "type": "range", "id": "bg_expand_y_m", "min": 0, "max": 200, "step": 2, "unit": "px", "label": "Background Height Expand (Mobile)", "default": 0 },
+
+    { "type": "header", "content": "Custom Font Setup" },
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "info": "Type exactly: bebasneuepro-bold.otf", "default": "bebasneuepro-bold.otf" },
+    
+    { "type": "header", "content": "Main Content" },
+    { "type": "checkbox", "id": "use_h1", "label": "Use H1 tag for heading", "default": true },
+    { "type": "text", "id": "logo_txt", "label": "Logo Text", "default": "GRIZA" },
+    { "type": "image_picker", "id": "logo_img", "label": "Logo SVG / PNG Image" },
+    { "type": "range", "id": "logo_w", "min": 10, "max": 300, "step": 5, "unit": "px", "label": "Logo Image Width", "default": 180 },
+    { "type": "range", "id": "logo_offset_x", "min": -100, "max": 100, "step": 2, "unit": "px", "label": "Logo Horizontal Offset", "default": 0 },
+    { "type": "number", "id": "logo_offset_y", "label": "Logo Vertical Offset (Desktop)", "default": 0 },
+    { "type": "number", "id": "logo_offset_y_m", "label": "Logo Vertical Offset (Mobile)", "default": 0 },
+    { "type": "range", "id": "logo_fs", "min": 10, "max": 60, "step": 1, "unit": "px", "label": "Logo Font Size", "default": 36 },
+    { "type": "textarea", "id": "eyebrow_txt", "label": "Subheading Text", "default": "Bază intensă cu 50% ghimbir. Pentru un bite puternic." },
+    { "type": "textarea", "id": "title_txt", "label": "Main Title (Desktop)", "default": "PENTRU BĂUTURI\nSCĂPATE DIN LANȚ!" },
+    { "type": "textarea", "id": "title_txt_m", "label": "Main Title (Mobile)", "default": "PENTRU BĂUTURI\nSCĂPATE DIN\nLANȚ!", "info": "Format specifically for mobile view using Enter." },
+
+    { "type": "header", "content": "CTA Button" },
+    { "type": "text", "id": "btn_lbl", "label": "Button Label", "default": "VREAU SĂ SIMT GHIMBIRUL!" },
+    { "type": "url", "id": "btn_lnk", "label": "Button Link" },
+    { "type": "image_picker", "id": "btn_bg_img", "label": "Button SVG Background (Upload BUTON.svg here)" },
+    { "type": "range", "id": "btn_fs", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Button Font Size", "default": 24 },
+    { "type": "range", "id": "btn_pad_x", "min": 10, "max": 100, "step": 2, "unit": "px", "label": "Horizontal Padding", "default": 40 },
+    { "type": "range", "id": "btn_pad_y", "min": 8, "max": 40, "step": 1, "unit": "px", "label": "Vertical Padding", "default": 18 },
+
+    { "type": "header", "content": "Images & Assets (USE SVGs!)" },
+    { "type": "image_picker", "id": "main_img", "label": "Dog Illustration (GRIZA HERO.svg)" },
+    { "type": "image_picker", "id": "pattern_img", "label": "Background Pattern - Desktop (PATTERN GINGER.svg)" },
+    { "type": "image_picker", "id": "pattern_img_m", "label": "Mobile Background Pattern (Upload Vertical SVG / PNG)" },
+    { "type": "range", "id": "pattern_opac", "min": 0, "max": 100, "step": 5, "unit": "%", "label": "Pattern Opacity", "default": 100 },
+
+    { "type": "header", "content": "Chain Positioning" },
+    { "type": "image_picker", "id": "chain_img", "label": "Broken Chain SVG (Upload LANȚ.svg)" },
+    { "type": "range", "id": "chain_w_m", "min": 20, "max": 200, "step": 2, "unit": "%", "label": "Chain Width (Mobile)", "default": 76 },
+    { "type": "number", "id": "chain_top_d", "label": "Chain Top (Desktop) %", "default": -25 },
+    { "type": "number", "id": "chain_right_d", "label": "Chain Right (Desktop) %", "default": -10 },
+    { "type": "number", "id": "chain_top_m", "label": "Chain Top (Mobile) %", "default": -20 },
+    { "type": "number", "id": "chain_right_m", "label": "Chain Right (Mobile) %", "default": -5 },
+    { "type": "number", "id": "chain_rotate_m", "label": "Chain Rotation (Mobile) deg", "default": 90 },
+
+    { "type": "header", "content": "Layout Spacing & Sizing (Desktop)" },
+    { "type": "range", "id": "img_max_w", "min": 300, "max": 1000, "step": 20, "unit": "px", "label": "Dog Image Max Width", "default": 720 },
+    { "type": "number", "id": "dog_offset_y", "label": "Dog Vertical Offset (Up)", "default": 0, "info": "Positive values move the dog UP. E.g., 50 or -50" },
+    { "type": "range", "id": "content_w", "min": 900, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1360 },
+    { "type": "range", "id": "col_w", "min": 30, "max": 80, "step": 1, "unit": "%", "label": "Text Column Width", "default": 65 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 400, "step": 4, "unit": "px", "label": "Padding Top", "default": 60 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 200, "step": 2, "unit": "px", "label": "Padding Bottom", "default": 0 },
+    { "type": "range", "id": "text_pad_bot", "min": 0, "max": 200, "step": 2, "unit": "px", "label": "Text Box Bottom Padding", "default": 20 },
+
+    { "type": "header", "content": "Layout Spacing & Sizing (Mobile)" },
+    { "type": "number", "id": "dog_offset_y_m", "label": "Dog Vertical Offset (Up) - Mobile", "default": 0, "info": "Positive values move the dog UP. E.g., 50 or -50" },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 400, "step": 4, "unit": "px", "label": "Padding Top - Mobile", "default": 32 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 200, "step": 2, "unit": "px", "label": "Padding Bottom - Mobile", "default": 10 },
+    { "type": "range", "id": "text_pad_bot_m", "min": 0, "max": 200, "step": 2, "unit": "px", "label": "Text Box Bottom Padding - Mobile", "default": 10 },
+
+    { "type": "header", "content": "Typography & Font Sizes" },
+    { "type": "range", "id": "eyebrow_fs", "min": 12, "max": 32, "step": 1, "unit": "px", "label": "Subheading Font Size", "default": 20 },
+    { "type": "range", "id": "title_fs_m", "min": 30, "max": 200, "step": 2, "unit": "px", "label": "Title Font Size (Mobile)", "default": 100 },
+    { "type": "range", "id": "title_fs_d", "min": 40, "max": 180, "step": 2, "unit": "px", "label": "Title Font Size (Desktop)", "default": 120 },
+    { "type": "range", "id": "title_lh", "min": 0.5, "max": 2.0, "step": 0.1, "label": "Title Line Height", "default": 1.0 },
+
+    { "type": "header", "content": "Official Brand Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background Color (Orange)", "default": "#EFB230" },
+    { "type": "color", "id": "txt_color", "label": "Heading Text Color (Cream)", "default": "#FEFADF" },
+    { "type": "color", "id": "sub_color", "label": "Subheading Text Color (Dark Purple)", "default": "#1D1939" },
+    { "type": "color", "id": "btn_bg_color", "label": "Button Fallback Background (Navy)", "default": "#2F275F" },
+    { "type": "color", "id": "btn_txt_color", "label": "Button Text Color (Yellow)", "default": "#EFB230" }
+  ],
+  "presets": [
+    {
+      "name": "Griza Hero Banner"
+    }
+  ]
+}
+{% endschema %}

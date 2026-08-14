@@ -1,0 +1,354 @@
+{%- comment -%}
+  Section: Griza Recipes (Foolproof Flexbox Overlay & Breakout Dynamics with Fixed Visibility)
+  Online Store 2.0 compatible. SEO & Responsive Optimized.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if section.settings.custom_font_filename != blank %}
+    {%- assign font_ext = section.settings.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ section.settings.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    
+    --recipes-bg: {{ s.bg_color }};
+    --recipes-heading-font: {% if section.settings.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+  }
+
+  .griza-recipes-{{ section.id }} {
+    background-color: var(--recipes-bg);
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px;
+    box-sizing: border-box;
+  }
+
+  .griza-recipes__container {
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+  }
+
+  /* Main Title */
+  .griza-recipes__main-title {
+    font-family: var(--recipes-heading-font) !important;
+    font-size: {{ s.title_fs_m }}px;
+    color: {{ s.title_color }};
+    text-align: center;
+    text-transform: uppercase;
+    line-height: {{ s.title_lh }};
+    margin: 0 0 {{ s.title_mb_m }}px;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* Grid Layout */
+  .griza-recipes__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: {{ s.grid_gap_m }}px;
+    margin-top: 50px;
+  }
+
+  /* Card Structure & Visibility Force Fix */
+  .griza-recipes__card,
+  .griza-recipes__card-bg,
+  .griza-recipes__card-content,
+  .griza-recipes__drink,
+  .griza-recipes__text-block,
+  .griza-recipes__card-title,
+  .griza-recipes__card-desc {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .griza-recipes__card {
+    position: relative;
+    width: 100%;
+    display: block;
+  }
+
+  /* Static Background Image (Dictates Card Height) */
+  .griza-recipes__card-bg {
+    width: 100%;
+    display: block;
+    line-height: 0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .griza-recipes__card-bg img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    object-position: center center;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .griza-recipes__card-bg-placeholder {
+    width: 100%;
+    padding-top: 120%;
+    background: #3B2A61;
+    display: block;
+  }
+
+  /* Foolproof Flexbox Content Overlay */
+  .griza-recipes__card-content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Always pushes content to the bottom */
+    align-items: center;
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+
+  /* Drink Block */
+  .griza-recipes__drink {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .griza-recipes__drink img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* Text Block */
+  .griza-recipes__text-block {
+    width: 100%;
+    text-align: center;
+  }
+
+  .griza-recipes__card-title {
+    font-family: var(--recipes-heading-font) !important;
+    font-size: {{ s.card_title_fs_m }}px;
+    color: {{ s.card_text_color }};
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin: 0 0 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .griza-recipes__card-desc {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: {{ s.card_desc_fs_m }}px;
+    color: {{ s.card_text_color }};
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  /* --- BLOCK SPECIFIC POSITIONING (MOBILE) --- */
+  {%- for block in section.blocks -%}
+    {%- assign b = block.settings -%}
+    .griza-recipes__card--{{ block.id }} .griza-recipes__card-bg img {
+      transform: scale({{ b.bg_scale | divided_by: 100.0 }}) translate({{ b.bg_shift_x }}%, {{ b.bg_shift_y }}%);
+    }
+    .griza-recipes__card--{{ block.id }} .griza-recipes__card-content {
+      padding-bottom: {{ b.text_pb_m }}%;
+    }
+    .griza-recipes__card--{{ block.id }} .griza-recipes__drink {
+      width: {{ b.drink_w_m }}%;
+      margin-bottom: {{ b.drink_mb_m }}%;
+      transform: translateY({{ b.drink_shift_y_m }}%);
+    }
+  {%- endfor -%}
+
+  /* DESKTOP VIEW (min-width: 750px) */
+  @media screen and (min-width: 750px) {
+    .griza-recipes-{{ section.id }} {
+      padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px;
+    }
+
+    .griza-recipes__main-title {
+      font-size: {{ s.title_fs_d }}px;
+      margin-bottom: {{ s.title_mb_d }}px;
+    }
+
+    .griza-recipes__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: {{ s.grid_gap_d }}px;
+      margin-top: 80px;
+    }
+
+    .griza-recipes__card-title {
+      font-size: {{ s.card_title_fs_d }}px;
+    }
+
+    .griza-recipes__card-desc {
+      font-size: {{ s.card_desc_fs_d }}px;
+    }
+
+    /* --- BLOCK SPECIFIC POSITIONING (DESKTOP) --- */
+    {%- for block in section.blocks -%}
+      {%- assign b = block.settings -%}
+      .griza-recipes__card--{{ block.id }} .griza-recipes__card-content {
+        padding-bottom: {{ b.text_pb_d }}%;
+      }
+      .griza-recipes__card--{{ block.id }} .griza-recipes__drink {
+        width: {{ b.drink_w_d }}%;
+        margin-bottom: {{ b.drink_mb_d }}%;
+        transform: translateY({{ b.drink_shift_y_d }}%);
+      }
+    {%- endfor -%}
+  }
+{%- endstyle -%}
+
+<section class="griza-recipes-{{ section.id }}">
+  <div class="griza-recipes__container">
+    
+    {%- if s.main_title != blank -%}
+      <h2 class="griza-recipes__main-title">{{ s.main_title | newline_to_br }}</h2>
+    {%- endif -%}
+
+    <div class="griza-recipes__grid">
+      {%- for block in section.blocks -%}
+        {%- assign b = block.settings -%}
+        <div class="griza-recipes__card griza-recipes__card--{{ block.id }}" {{ block.shopify_attributes }}>
+          
+          <!-- Static Background (Dictates Card Size) -->
+          <div class="griza-recipes__card-bg">
+            {%- if b.bg_image != blank -%}
+              {%- assign bg_alt = b.bg_image.alt | default: b.title | default: 'Griza Recipe Background' | escape -%}
+              {{ b.bg_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: bg_alt }}
+            {%- else -%}
+              <div class="griza-recipes__card-bg-placeholder"></div>
+            {%- endif -%}
+          </div>
+
+          <!-- Flex Overlay: Content stacks naturally from the bottom -->
+          <div class="griza-recipes__card-content">
+            
+            <!-- Drink Image -->
+            <div class="griza-recipes__drink">
+              {%- if b.drink_image != blank -%}
+                {%- assign drink_alt = b.drink_image.alt | default: b.title | default: 'Griza Recipe Drink' | escape -%}
+                {{ b.drink_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: drink_alt }}
+              {%- else -%}
+                <div style="width: 100%; background: #ccc; aspect-ratio: 1/1;"></div>
+              {%- endif -%}
+            </div>
+
+            <!-- Text Block -->
+            <div class="griza-recipes__text-block">
+              {%- if b.title != blank -%}
+                <h3 class="griza-recipes__card-title">{{ b.title }}</h3>
+              {%- endif -%}
+              
+              {%- if b.desc != blank -%}
+                <p class="griza-recipes__card-desc">{{ b.desc | newline_to_br }}</p>
+              {%- endif -%}
+            </div>
+
+          </div>
+
+        </div>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Recipes",
+  "tag": "section",
+  "class": "section-griza-recipes",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "header", "content": "Custom Font Setup" },
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "default": "bebasneuepro-bold.otf" },
+    
+    { "type": "header", "content": "Main Settings" },
+    { "type": "textarea", "id": "main_title", "label": "Main Title (H2)", "default": "CE FACI CU GRIZA? CE TE RUPE LANȚUL..." },
+    { "type": "color", "id": "bg_color", "label": "Section Background Color", "default": "#E86E25" },
+    { "type": "color", "id": "title_color", "label": "Main Title Color", "default": "#FEFADF" },
+    { "type": "color", "id": "card_text_color", "label": "Card Text Color", "default": "#FEFADF" },
+
+    { "type": "header", "content": "Layout Spacing" },
+    { "type": "range", "id": "content_w", "min": 800, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1300 },
+    { "type": "range", "id": "grid_gap_d", "min": 10, "max": 100, "step": 2, "unit": "px", "label": "Grid Gap (Desktop)", "default": 30 },
+    { "type": "range", "id": "grid_gap_m", "min": 10, "max": 100, "step": 2, "unit": "px", "label": "Grid Gap (Mobile)", "default": 50 },
+    { "type": "range", "id": "title_mb_d", "min": 20, "max": 100, "step": 5, "unit": "px", "label": "Title Bottom Margin (Desktop)", "default": 50 },
+    { "type": "range", "id": "title_mb_m", "min": 10, "max": 80, "step": 5, "unit": "px", "label": "Title Bottom Margin (Mobile)", "default": 30 },
+
+    { "type": "header", "content": "Padding" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Top (Desktop)", "default": 60 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 60 },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Padding Top (Mobile)", "default": 40 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 40 },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "title_fs_d", "min": 30, "max": 120, "step": 2, "unit": "px", "label": "Main Title Size (Desktop)", "default": 80 },
+    { "type": "range", "id": "title_fs_m", "min": 20, "max": 80, "step": 2, "unit": "px", "label": "Main Title Size (Mobile)", "default": 48 },
+    { "type": "range", "id": "title_lh", "min": 0.8, "max": 1.5, "step": 0.1, "label": "Main Title Line Height", "default": 1.0 },
+    { "type": "range", "id": "card_title_fs_d", "min": 12, "max": 60, "step": 1, "unit": "px", "label": "Card Title Size (Desktop)", "default": 38 },
+    { "type": "range", "id": "card_title_fs_m", "min": 12, "max": 50, "step": 1, "unit": "px", "label": "Card Title Size (Mobile)", "default": 36 },
+    { "type": "range", "id": "card_desc_fs_d", "min": 10, "max": 30, "step": 1, "unit": "px", "label": "Card Description Size (Desktop)", "default": 16 },
+    { "type": "range", "id": "card_desc_fs_m", "min": 10, "max": 30, "step": 1, "unit": "px", "label": "Card Description Size (Mobile)", "default": 16 }
+  ],
+  "blocks": [
+    {
+      "type": "recipe",
+      "name": "Recipe Card",
+      "settings": [
+        { "type": "image_picker", "id": "bg_image", "label": "Background Image (Purple Shape)" },
+        { "type": "header", "content": "Background Adjustments" },
+        { "type": "range", "id": "bg_scale", "min": 100, "max": 150, "step": 1, "unit": "%", "label": "Background Zoom", "default": 100, "info": "Zoom in to prevent empty gaps when shifting." },
+        { "type": "range", "id": "bg_shift_x", "min": -50, "max": 50, "step": 1, "unit": "%", "label": "Horizontal Shift", "default": 0, "info": "Move the background left or right." },
+        { "type": "range", "id": "bg_shift_y", "min": -50, "max": 50, "step": 1, "unit": "%", "label": "Vertical Shift", "default": 0, "info": "Move the background up or down." },
+
+        { "type": "image_picker", "id": "drink_image", "label": "Foreground Image (Drink)" },
+        
+        { "type": "header", "content": "Desktop Settings" },
+        { "type": "range", "id": "text_pb_d", "min": 0, "max": 30, "step": 1, "unit": "%", "label": "Text Bottom Padding (Desktop)", "default": 10, "info": "Pushes everything up from the bottom edge." },
+        { "type": "range", "id": "drink_w_d", "min": 30, "max": 150, "step": 2, "unit": "%", "label": "Drink Width (Desktop)", "default": 70, "info": "Size of the drink relative to the card." },
+        { "type": "range", "id": "drink_mb_d", "min": -50, "max": 50, "step": 1, "unit": "%", "label": "Drink Margin Bottom (Desktop)", "default": 5, "info": "Space between the drink and the text." },
+        { "type": "range", "id": "drink_shift_y_d", "min": -50, "max": 50, "step": 1, "unit": "%", "label": "Drink Vertical Shift (Desktop)", "default": -10, "info": "Fine-tune: move the drink up or down without affecting the text." },
+
+        { "type": "header", "content": "Mobile Settings" },
+        { "type": "range", "id": "text_pb_m", "min": 0, "max": 30, "step": 1, "unit": "%", "label": "Text Bottom Padding (Mobile)", "default": 10, "info": "Pushes everything up from the bottom edge on mobile." },
+        { "type": "range", "id": "drink_w_m", "min": 30, "max": 150, "step": 2, "unit": "%", "label": "Drink Width (Mobile)", "default": 80, "info": "Size of the drink relative to the card on mobile." },
+        { "type": "range", "id": "drink_mb_m", "min": -50, "max": 50, "step": 1, "unit": "%", "label": "Drink Margin Bottom (Mobile)", "default": 5, "info": "Space between the drink and the text on mobile." },
+        { "type": "range", "id": "drink_shift_y_m", "min": -50, "max": 50, "step": 1, "unit": "%", "label": "Drink Vertical Shift (Mobile)", "default": -10, "info": "Fine-tune: move the drink up or down without affecting the text." },
+
+        { "type": "header", "content": "Text Content" },
+        { "type": "text", "id": "title", "label": "Recipe Title", "default": "LIMONADĂ CU DINȚI" },
+        { "type": "textarea", "id": "desc", "label": "Recipe Description", "default": "Băuturi răcoritoare cu accent citric\nși bite hotărât de ghimbir." }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,354 @@
+{%- comment -%}
+  Section: Griza Newsletter (Flat DOM with CSS Grid & Flexbox Auto-Sizing for Buttons)
+  Online Store 2.0 compatible. SEO & Responsive Optimized.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  {% if section.settings.custom_font_filename != blank %}
+    {%- assign font_ext = section.settings.custom_font_filename | split: '.' | last | downcase -%}
+    {%- assign font_format = 'woff2' -%}
+    {%- if font_ext == 'otf' -%}{%- assign font_format = 'opentype' -%}{%- endif -%}
+    {%- if font_ext == 'ttf' -%}{%- assign font_format = 'truetype' -%}{%- endif -%}
+    {%- if font_ext == 'woff' -%}{%- assign font_format = 'woff' -%}{%- endif -%}
+
+    @font-face {
+      font-family: 'GrizaCustomFont';
+      src: url('{{ section.settings.custom_font_filename | asset_url }}') format('{{ font_format }}');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  {% endif %}
+
+  #shopify-section-{{ section.id }} {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    
+    --news-bg: {{ s.bg_color }};
+    --news-heading-font: {% if section.settings.custom_font_filename != blank %}'GrizaCustomFont'{% else %}'Impact'{% endif %}, sans-serif;
+  }
+
+  .griza-newsletter-{{ section.id }} {
+    background-color: var(--news-bg);
+    padding: {{ s.pad_top_m }}px 20px {{ s.pad_bottom_m }}px;
+    box-sizing: border-box;
+  }
+
+  /* --- MOBILE DEFAULT LAYOUT (Flex Column) --- */
+  .griza-newsletter__container {
+    max-width: {{ s.content_w }}px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .griza-newsletter__title-wrapper {
+    order: 1;
+    width: 100%;
+  }
+
+  .griza-newsletter__media {
+    order: 2;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .griza-newsletter__form-wrapper {
+    order: 3;
+    width: 100%;
+  }
+
+  /* --- ELEMENTS STYLING --- */
+  .griza-newsletter__title {
+    font-family: var(--news-heading-font) !important;
+    font-size: {{ s.title_fs_m }}px;
+    color: {{ s.title_color }};
+    line-height: {{ s.title_lh }};
+    text-transform: uppercase;
+    text-align: left;
+    margin: 0;
+  }
+
+  .griza-newsletter__media img {
+    width: 100%;
+    max-width: {{ s.dog_max_w_m }}px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .griza-newsletter__form-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .griza-newsletter__input {
+    flex-grow: 1;
+    width: 100%;
+    padding: 16px 20px;
+    font-family: 'Barlow', sans-serif;
+    font-size: {{ s.input_fs_m }}px;
+    color: {{ s.input_text_color }};
+    background-color: transparent;
+    border: 1px solid {{ s.input_border_color }};
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .griza-newsletter__input::placeholder {
+    color: {{ s.input_text_color }};
+    opacity: 0.7;
+  }
+
+  .griza-newsletter__input:focus {
+    border-width: 2px;
+  }
+
+  /* CSS Masked Button */
+  .griza-newsletter__submit {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 16px 30px;
+    background-color: {{ s.btn_color }};
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    
+    {% if s.btn_image != blank %}
+      -webkit-mask-image: url('{{ s.btn_image | image_url: width: 600 }}');
+      -webkit-mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-image: url('{{ s.btn_image | image_url: width: 600 }}');
+      mask-size: 100% 100%;
+      mask-repeat: no-repeat;
+    {% endif %}
+  }
+
+  .griza-newsletter__submit:hover {
+    opacity: 0.9;
+  }
+
+  .griza-newsletter__submit span {
+    font-family: var(--news-heading-font) !important;
+    font-size: {{ s.btn_fs_m }}px;
+    color: {{ s.btn_text_color }};
+    text-transform: uppercase;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+    white-space: nowrap; /* Megakadályozza, hogy a gomb szövege sort törjön */
+  }
+
+  .griza-newsletter__success {
+    font-family: 'Barlow', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: {{ s.btn_color }};
+    margin: 0;
+    padding: 15px;
+    border: 2px dashed {{ s.btn_color }};
+    text-align: center;
+  }
+
+  /* --- DESKTOP VIEW (CSS GRID) --- */
+  @media screen and (min-width: 750px) {
+    .griza-newsletter-{{ section.id }} {
+      padding: {{ s.pad_top }}px 40px {{ s.pad_bottom }}px;
+    }
+
+    .griza-newsletter__container {
+      display: grid;
+      grid-template-columns: {{ s.col_w }}fr {{ 100 | minus: s.col_w }}fr;
+      grid-template-rows: 1fr auto;
+      gap: 30px 50px;
+      align-items: center;
+    }
+
+    .griza-newsletter__title-wrapper {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: end;
+      order: unset;
+    }
+
+    .griza-newsletter__form-wrapper {
+      grid-column: 1;
+      grid-row: 2;
+      align-self: start;
+      order: unset;
+    }
+
+    .griza-newsletter__media {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      justify-content: flex-end;
+      order: unset;
+    }
+
+    .griza-newsletter__media img {
+      max-width: {{ s.dog_max_w_d }}px;
+    }
+
+    .griza-newsletter__title {
+      font-size: {{ s.title_fs_d }}px;
+    }
+
+    .griza-newsletter__form-inner {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: stretch;
+    }
+
+    .griza-newsletter__input {
+      flex: 1 1 auto; /* Kitölti a maradék helyet */
+      width: 100%;
+      font-size: {{ s.input_fs_d }}px;
+    }
+
+    .griza-newsletter__submit {
+      flex: 0 0 auto; /* Pontosan akkora lesz, mint a benne lévő szöveg */
+      width: max-content;
+    }
+
+    .griza-newsletter__submit span {
+      font-size: {{ s.btn_fs_d }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="griza-newsletter-{{ section.id }}">
+  <div class="griza-newsletter__container">
+    
+    <!-- 1. Cím Blokkj -->
+    <div class="griza-newsletter__title-wrapper">
+      {%- if s.title != blank -%}
+        <h2 class="griza-newsletter__title">{{ s.title | newline_to_br }}</h2>
+      {%- endif -%}
+    </div>
+
+    <!-- 2. Kutya Kép Blokkj -->
+    <div class="griza-newsletter__media">
+      {%- if s.dog_image != blank -%}
+        <img 
+          src="{{ s.dog_image | image_url: width: 1200 }}" 
+          alt="Griza Chain Dog" 
+          loading="lazy"
+        >
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+
+    <!-- 3. Űrlap Blokkj -->
+    <div class="griza-newsletter__form-wrapper">
+      {% form 'customer', class: 'griza-newsletter__form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        
+        {%- if form.posted_successfully? -%}
+          <p class="griza-newsletter__success">Mulțumim pentru abonare! Vei fi notificat la lansare.</p>
+        {%- else -%}
+          <div class="griza-newsletter__form-inner">
+            <input 
+              type="email" 
+              name="contact[email]" 
+              class="griza-newsletter__input"
+              placeholder="numeprenume@gmail.com" 
+              aria-label="Email address"
+              required
+            >
+            <button type="submit" class="griza-newsletter__submit" aria-label="Subscribe">
+              <span>{{ s.btn_text }}</span>
+            </button>
+          </div>
+          {%- if form.errors -%}
+            <div style="color: red; margin-top: 10px; font-family: 'Barlow', sans-serif;">
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {% endform %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Griza Newsletter",
+  "tag": "section",
+  "class": "section-griza-newsletter",
+  "settings": [
+    { "type": "header", "content": "Custom Font Setup" },
+    { "type": "text", "id": "custom_font_filename", "label": "Custom Font Filename", "default": "bebasneuepro-bold.otf" },
+    
+    { "type": "header", "content": "Section Colors" },
+    { "type": "color", "id": "bg_color", "label": "Section Background", "default": "#FEFADF" },
+    { "type": "color", "id": "title_color", "label": "Headline Color", "default": "#1D1939" },
+
+    { "type": "header", "content": "Text Content" },
+    { "type": "textarea", "id": "title", "label": "Headline", "default": "AJUTĂ-NE SĂ\nRUPEM LANȚUL\nCARE TE ȚINE\nÎN BANAL" },
+
+    { "type": "header", "content": "Form & Input Styling" },
+    { "type": "color", "id": "input_text_color", "label": "Input Text & Placeholder Color", "default": "#1D1939" },
+    { "type": "color", "id": "input_border_color", "label": "Input Border Color", "default": "#E86E25" },
+    { "type": "range", "id": "input_fs_d", "min": 14, "max": 30, "step": 1, "unit": "px", "label": "Input Text Size (Desktop)", "default": 20 },
+    { "type": "range", "id": "input_fs_m", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Input Text Size (Mobile)", "default": 16 },
+
+    { "type": "header", "content": "Button Styling" },
+    { "type": "text", "id": "btn_text", "label": "Button Text", "default": "ANUNȚĂ-MĂ LA LANSARE!" },
+    { "type": "color", "id": "btn_color", "label": "Button Solid Color (Orange)", "default": "#E86E25" },
+    { "type": "color", "id": "btn_text_color", "label": "Button Text Color", "default": "#FFFFFF" },
+    { "type": "range", "id": "btn_fs_d", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Button Text Size (Desktop)", "default": 28 },
+    { "type": "range", "id": "btn_fs_m", "min": 12, "max": 36, "step": 1, "unit": "px", "label": "Button Text Size (Mobile)", "default": 24 },
+    { 
+      "type": "image_picker", 
+      "id": "btn_image", 
+      "label": "Button Shape Mask (Upload your Blue Bitten Button)",
+      "info": "Upload the blue PNG/SVG button here. The system will use its shape, but automatically color it with the 'Button Solid Color' chosen above!"
+    },
+
+    { "type": "header", "content": "Dog Illustration" },
+    { "type": "image_picker", "id": "dog_image", "label": "Dog Illustration" },
+    { "type": "range", "id": "dog_max_w_d", "min": 300, "max": 1000, "step": 10, "unit": "px", "label": "Dog Max Width (Desktop)", "default": 650 },
+    { "type": "range", "id": "dog_max_w_m", "min": 200, "max": 600, "step": 10, "unit": "px", "label": "Dog Max Width (Mobile)", "default": 450 },
+
+    { "type": "header", "content": "Layout Spacing" },
+    { "type": "range", "id": "content_w", "min": 800, "max": 1600, "step": 20, "unit": "px", "label": "Content Max Width", "default": 1200 },
+    { "type": "range", "id": "col_w", "min": 30, "max": 70, "step": 1, "unit": "%", "label": "Left Column Width (Desktop)", "default": 45 },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Top (Desktop)", "default": 80 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 80 },
+    { "type": "range", "id": "pad_top_m", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Padding Top (Mobile)", "default": 50 },
+    { "type": "range", "id": "pad_bottom_m", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 50 },
+
+    { "type": "header", "content": "Typography: Headline" },
+    { "type": "range", "id": "title_fs_d", "min": 30, "max": 120, "step": 2, "unit": "px", "label": "Headline Size (Desktop)", "default": 76 },
+    { "type": "range", "id": "title_fs_m", "min": 20, "max": 100, "step": 2, "unit": "px", "label": "Headline Size (Mobile)", "default": 48 },
+    { "type": "range", "id": "title_lh", "min": 0.8, "max": 1.5, "step": 0.1, "label": "Headline Line Height", "default": 1.0 }
+  ],
+  "presets": [
+    {
+      "name": "Griza Newsletter"
+    }
+  ]
+}
+{% endschema %}
