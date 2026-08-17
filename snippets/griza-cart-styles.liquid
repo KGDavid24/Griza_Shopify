@@ -125,7 +125,7 @@
     color: var(--griza-cream);
   }
 
-  .cart-page .cart-totals__original-label,
+  .cart-page .cart-totals__total-label,
   .cart-page .cart-note__label,
   .cart-page .cart-discount__summary {
     font-family: 'Barlow', sans-serif;
@@ -137,19 +137,23 @@
     opacity: 0.7;
   }
 
-  .cart-page .cart-totals__original-value {
-    font-family: var(--font-heading--family);
-    font-size: 34px;
-    line-height: 1;
-    color: var(--griza-accent);
-  }
-
   /* Fine print and rules read quietly on navy */
   .cart-page .cart-page__summary .cart-secondary-typography,
   .cart-page .cart-page__summary small,
   .cart-page .cart-page__summary .tax-note {
     color: var(--griza-cream);
     opacity: 0.6;
+  }
+
+  /* The total also carries .cart-secondary-typography (theme markup), which
+     would otherwise dim it to cream via the rule above - same specificity,
+     so it has to come after to win. */
+  .cart-page .cart-page__summary .cart-totals__total-value {
+    font-family: var(--font-heading--family);
+    font-size: 34px;
+    line-height: 1;
+    color: var(--griza-accent);
+    opacity: 1;
   }
 
   .cart-page .cart-actions__divider,
@@ -181,7 +185,7 @@
     .cart-page .cart-title { font-size: 34px; }
     .cart-page .cart-items__details a,
     .cart-page .cart-items__details .cart-primary-typography { font-size: 19px; }
-    .cart-page .cart-totals__original-value { font-size: 28px; }
+    .cart-page .cart-totals__total-value { font-size: 28px; }
     .cart-page .cart-page__summary { padding: 20px 18px; }
   }
 
