@@ -771,6 +771,31 @@
   </details>
 </header-drawer>
 
+{%- comment -%}
+  Ginger field behind the mobile nav drawer, matching the cart drawer.
+  Needs a Liquid-resolving style tag rather than the static stylesheet below,
+  since that one never resolves the pattern's asset URL.
+{%- endcomment -%}
+{%- assign griza_drawer_menu_pattern = 'griza-gingern-pattern.svg' | file_url -%}
+{%- if griza_drawer_menu_pattern != blank -%}
+  {% style %}
+    .menu-drawer {
+      background-image:
+        linear-gradient(rgba(254, 250, 222, 0.92), rgba(254, 250, 222, 0.92)),
+        url('{{ griza_drawer_menu_pattern }}');
+      background-repeat: repeat, repeat;
+      background-size: auto, 260px;
+      background-position: top left;
+    }
+
+    @media screen and (max-width: 749px) {
+      .menu-drawer {
+        background-size: auto, 220px;
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
+
 {% stylesheet %}
   .header__icon--menu {
     position: initial;

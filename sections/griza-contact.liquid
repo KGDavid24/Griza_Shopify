@@ -120,6 +120,10 @@
     height: auto;
     display: block;
     margin-top: 8px;
+    /* Centered on mobile, where intro copy runs the full width above it and
+       a left-stuck mascot just reads as an alignment mistake. Left on desktop,
+       where it shares a narrower text column with the eyebrow/title/body. */
+    margin-inline: auto;
   }
 
   /* ---------- FORM ---------- */
@@ -251,7 +255,7 @@
 
     .gc-{{ section.id }}__title  { font-size: {{ s.title_fs_d }}px; }
     .gc-{{ section.id }}__submit { font-size: {{ s.btn_fs_d }}px; }
-    .gc-{{ section.id }}__mascot { max-width: {{ s.mascot_max_w }}px; }
+    .gc-{{ section.id }}__mascot { max-width: {{ s.mascot_max_w }}px; margin-inline: 0; }
 
     .gc-{{ section.id }}__row {
       display: grid;

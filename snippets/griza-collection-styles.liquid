@@ -1,0 +1,46 @@
+{%- comment -%}
+  Griza catalog page styling. Mobile-only touch-ups.
+
+  The single-product grid was two columns wide on mobile (Horizon's default
+  "small" mobile card size), so the lone card sat in the left cell with the
+  whole right half of the screen left blank cream - it read as thrown in
+  rather than deliberate. templates/collection.json now sets the mobile card
+  size to "large" (Horizon's own single-column mobile layout), and this file
+  frames that single card and brings the ginger field onto the section like
+  every other surface on the site, instead of leaving it flat.
+
+  Needs section.id, so this has to be a Liquid-resolving style tag rather
+  than the static theme stylesheet, which never resolves per-instance values.
+{%- endcomment -%}
+
+{%- assign griza_collection_pattern = 'griza-gingern-pattern.svg' | file_url -%}
+{% style %}
+  @media screen and (max-width: 749px) {
+    {% if griza_collection_pattern != blank %}
+      #shopify-section-{{ section.id }} .section-background {
+        background-image:
+          linear-gradient(rgba(254, 250, 222, 0.92), rgba(254, 250, 222, 0.92)),
+          url('{{ griza_collection_pattern }}');
+        background-repeat: repeat, repeat;
+        background-size: auto, 200px;
+      }
+    {% endif %}
+
+    /* Full-bleed single column now, but the card itself stays a comfortable
+       width so the pattern shows on both sides instead of the photo running
+       edge to edge. */
+    #shopify-section-{{ section.id }} .product-grid__item {
+      max-width: 420px;
+      margin-inline: auto;
+    }
+
+    /* A hard-shadow frame, same device as the price sticker on the product
+       page - gives the lone card its own presence against the patterned
+       background instead of blending into it. */
+    #shopify-section-{{ section.id }} .product-card__content {
+      background-color: #fefadf;
+      border: 2px solid rgba(29, 25, 57, 0.16);
+      box-shadow: 8px 8px 0 0 rgba(29, 25, 57, 0.14);
+    }
+  }
+{% endstyle %}
